@@ -8,11 +8,11 @@ export async function POST(request: NextRequest) {
 
   let response: Response;
   try {
-    response = await fetch("http://localhost:8001/api/edd/analyze", {
+    const backendUrl = process.env.BACKEND_URL || "http://localhost:8001";
+    response = await fetch(`${backendUrl}/api/edd/analyze`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
-      // @ts-expect-error — Node.js fetch supports signal for abort, no built-in timeout needed
       signal: AbortSignal.timeout(180_000), // 3-minute hard cap
     });
   } catch (err) {
