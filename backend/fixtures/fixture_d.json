@@ -1,0 +1,219 @@
+{
+  "fixture_id": "fixture_d",
+  "label": "Stress Test D — Joint Revocable Trust + Cayman Entity",
+  "scenario": "stress_d",
+  "description": "UBO resolution with a joint revocable trust (two co-grantors, each with a 50% share) and a Cayman Islands entity. Both co-grantors resolve as UBOs. High-risk jurisdiction flag on Cayman entity. No adverse media.",
+  "entities": [
+    {
+      "entity_id": "riverside_commerce_llc",
+      "label": "Riverside Commerce Center LLC",
+      "entity_type": "company",
+      "entity_subtype": "LLC",
+      "jurisdiction": "Delaware, USA",
+      "is_root": true,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "henderson_real_estate_llc",
+      "label": "Henderson Real Estate Partners LLC",
+      "entity_type": "company",
+      "entity_subtype": "LLC",
+      "jurisdiction": "Nevada, USA",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "wu_pacific_investments_ltd",
+      "label": "Wu Pacific Investments Ltd",
+      "entity_type": "company",
+      "entity_subtype": "Ltd",
+      "jurisdiction": "Cayman Islands",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "henderson_wu_joint_trust",
+      "label": "Henderson-Wu Joint Revocable Living Trust",
+      "entity_type": "trust",
+      "entity_subtype": "revocable_trust",
+      "jurisdiction": "California, USA",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null,
+      "grantor_ids": ["robert_henderson", "lin_wu"],
+      "grantor_pcts": {"robert_henderson": 0.5, "lin_wu": 0.5},
+      "discretionary": false
+    },
+    {
+      "entity_id": "robert_henderson",
+      "label": "Robert William Henderson",
+      "entity_type": "individual",
+      "entity_subtype": null,
+      "jurisdiction": "Newport Beach, California, USA",
+      "nationality": "US",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "lin_wu",
+      "label": "Lin Wu",
+      "entity_type": "individual",
+      "entity_subtype": null,
+      "jurisdiction": "Newport Beach, California, USA",
+      "nationality": "CN",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null
+    }
+  ],
+  "edges": [
+    {
+      "edge_id": "e1",
+      "source": "riverside_commerce_llc",
+      "target": "henderson_real_estate_llc",
+      "ownership_pct": 80.0,
+      "doc_id": "riverside_commerce_articles",
+      "page": 2
+    },
+    {
+      "edge_id": "e2",
+      "source": "riverside_commerce_llc",
+      "target": "wu_pacific_investments_ltd",
+      "ownership_pct": 20.0,
+      "doc_id": "riverside_commerce_articles",
+      "page": 2
+    },
+    {
+      "edge_id": "e3",
+      "source": "henderson_real_estate_llc",
+      "target": "robert_henderson",
+      "ownership_pct": 51.0,
+      "doc_id": "henderson_real_estate_operating_agreement",
+      "page": 2
+    },
+    {
+      "edge_id": "e4",
+      "source": "henderson_real_estate_llc",
+      "target": "henderson_wu_joint_trust",
+      "ownership_pct": 49.0,
+      "doc_id": "henderson_real_estate_operating_agreement",
+      "page": 2
+    },
+    {
+      "edge_id": "e5",
+      "source": "wu_pacific_investments_ltd",
+      "target": "lin_wu",
+      "ownership_pct": 100.0,
+      "doc_id": "wu_pacific_register",
+      "page": 2
+    }
+  ],
+  "documents": [
+    {
+      "doc_id": "riverside_commerce_articles",
+      "label": "Riverside Commerce Center LLC Articles of Organization",
+      "doc_type": "articles_of_organization",
+      "pages": [
+        {
+          "page": 1,
+          "text": "CERTIFICATE OF FORMATION\nRIVERSIDE COMMERCE CENTER LLC\nState of Delaware\n\nFirst: The name of the limited liability company is Riverside Commerce Center LLC.\nSecond: The registered office is located at 1209 North Orange Street, Wilmington, Delaware 19801.\nThird: Registered Agent: The Corporation Trust Company.\n\nDate of Formation: June 18, 2020.\nPrimary Business: Commercial real estate investment and management."
+        },
+        {
+          "page": 2,
+          "text": "MEMBERSHIP STRUCTURE\n\nThe Company is owned by the following members:\n\n(1) Henderson Real Estate Partners LLC, a Nevada limited liability company, with its principal office at 3800 Howard Hughes Parkway, Suite 500, Las Vegas, Nevada 89169: eighty percent (80%) membership interest.\n\n(2) Wu Pacific Investments Ltd, a company incorporated under the laws of the Cayman Islands, with its registered office at Ugland House, 121 South Church Street, Grand Cayman, KY1-1104, Cayman Islands: twenty percent (20%) membership interest.\n\nTotal membership interests: one hundred percent (100%)."
+        },
+        {
+          "page": 3,
+          "text": "MANAGEMENT\n\nThe Company shall be managed by Robert William Henderson as Managing Member, in his individual capacity, subject to any approvals required by members holding a majority of membership interests for major decisions.\n\nPrincipal investment focus: Industrial and commercial real estate assets in the Inland Empire and Southern California markets."
+        }
+      ]
+    },
+    {
+      "doc_id": "henderson_real_estate_operating_agreement",
+      "label": "Henderson Real Estate Partners LLC Operating Agreement",
+      "doc_type": "operating_agreement",
+      "pages": [
+        {
+          "page": 1,
+          "text": "OPERATING AGREEMENT OF HENDERSON REAL ESTATE PARTNERS LLC\nA Nevada Limited Liability Company\n\nThis Operating Agreement is made effective September 3, 2018 among the members of Henderson Real Estate Partners LLC, organized under the Nevada Revised Statutes Chapter 86."
+        },
+        {
+          "page": 2,
+          "text": "ARTICLE II — MEMBERSHIP INTERESTS\n\nSection 2.1 — Members and Ownership Percentages. The Company has two members:\n\n(a) Robert William Henderson, a citizen of the United States of America, residing at 14 Balboa Coves, Newport Beach, California 92663: fifty-one percent (51%) membership interest.\n\n(b) The Henderson-Wu Joint Revocable Living Trust, dated April 22, 2019, established under the laws of the State of California, with Robert William Henderson and Lin Wu serving as Co-Grantors and Co-Trustees: forty-nine percent (49%) membership interest.\n\nTotal: one hundred percent (100%)."
+        },
+        {
+          "page": 3,
+          "text": "ARTICLE III — MANAGEMENT\n\nSection 3.1 — Managing Member. Robert William Henderson is designated as Managing Member and shall have primary authority over the day-to-day operations of the Company.\n\nSection 3.2 — Major Decisions. Decisions involving acquisition or disposition of assets exceeding $1,000,000 require approval of members holding a majority interest.\n\nSection 3.3 — Distributions. Net operating income shall be distributed quarterly in proportion to membership interest percentages."
+        }
+      ]
+    },
+    {
+      "doc_id": "henderson_wu_joint_trust_agreement",
+      "label": "Henderson-Wu Joint Revocable Living Trust Agreement",
+      "doc_type": "trust_agreement",
+      "pages": [
+        {
+          "page": 1,
+          "text": "HENDERSON-WU JOINT REVOCABLE LIVING TRUST\n\nThis Trust Agreement is made on April 22, 2019 by ROBERT WILLIAM HENDERSON, a citizen of the United States, and LIN WU, a citizen of the People's Republic of China holding Lawful Permanent Resident status in the United States (LPR since 2014), both residing at 14 Balboa Coves, Newport Beach, California 92663, as Co-Grantors and Co-Trustees.\n\nThe Grantors hereby create a revocable living trust known as the HENDERSON-WU JOINT REVOCABLE LIVING TRUST."
+        },
+        {
+          "page": 2,
+          "text": "ARTICLE 2 — REVOCABILITY AND CO-GRANTOR INTERESTS\n\nSection 2.1 — Revocability. This Trust is fully revocable. Each Co-Grantor may revoke his or her respective share of the Trust by delivering written notice to both Co-Trustees.\n\nSection 2.2 — Co-Grantor Beneficial Interests. Each Co-Grantor holds an equal fifty percent (50%) beneficial interest in the Trust assets. Robert William Henderson holds fifty percent (50%) and Lin Wu holds fifty percent (50%).\n\nSection 2.3 — Trust Assets. Current Trust assets include a forty-nine percent (49%) membership interest in Henderson Real Estate Partners LLC, a Nevada limited liability company."
+        },
+        {
+          "page": 3,
+          "text": "ARTICLE 3 — REGULATORY STATUS\n\nSection 3.1 — Beneficial Ownership. Because this Trust is revocable, each Co-Grantor is treated as the owner of their respective proportional share of all Trust assets for federal and state income tax purposes and for all regulatory reporting purposes, including FinCEN beneficial ownership certification.\n\nFor purposes of beneficial ownership determination: Robert William Henderson is the beneficial owner of fifty percent (50%) of all assets held by this Trust, and Lin Wu is the beneficial owner of fifty percent (50%) of all assets held by this Trust."
+        }
+      ]
+    },
+    {
+      "doc_id": "wu_pacific_register",
+      "label": "Wu Pacific Investments Ltd Certificate of Incorporation",
+      "doc_type": "certificate_of_incorporation",
+      "pages": [
+        {
+          "page": 1,
+          "text": "CERTIFICATE OF INCORPORATION\nWU PACIFIC INVESTMENTS LTD\nCayman Islands\n\nThis certifies that Wu Pacific Investments Ltd is incorporated as an exempted company under the Companies Act (as revised) of the Cayman Islands.\n\nDate of Incorporation: March 10, 2020.\nRegistered Office: Ugland House, 121 South Church Street, Grand Cayman, KY1-1104, Cayman Islands.\nRegistered Agent: Maples Corporate Services Limited.\n\nAuthorized Share Capital: 50,000 ordinary shares of USD 1.00 each."
+        },
+        {
+          "page": 2,
+          "text": "SHAREHOLDERS AND DIRECTORS\n\nRegistered Shareholder: Lin Wu, a citizen of the People's Republic of China, holding Lawful Permanent Resident (LPR/Green Card) status in the United States of America, with residential address at 14 Balboa Coves, Newport Beach, California 92663.\n\nLin Wu holds fifty thousand (50,000) ordinary shares, representing one hundred percent (100%) of the issued and outstanding share capital of Wu Pacific Investments Ltd.\n\nDirector: Lin Wu."
+        },
+        {
+          "page": 3,
+          "text": "BUSINESS ACTIVITIES AND PURPOSE\n\nWu Pacific Investments Ltd is an exempted company engaged in investment holding and real estate asset management, with a focus on commercial properties in the United States. The Company currently holds a twenty percent (20%) membership interest in Riverside Commerce Center LLC, a Delaware limited liability company.\n\nNote: As a Cayman Islands exempted company, Wu Pacific Investments Ltd is not subject to Cayman Islands income tax. Beneficial ownership documentation has been provided to the registered agent in compliance with the Cayman Islands Beneficial Ownership Transparency Act."
+        }
+      ]
+    }
+  ],
+  "answer_key": {
+    "resolved_ubos": [
+      {
+        "name": "Robert William Henderson",
+        "nationality": "US",
+        "ownership_pct": 60.4,
+        "path": ["riverside_commerce_llc", "henderson_real_estate_llc", "robert_henderson"],
+        "ubo_by_control": false
+      },
+      {
+        "name": "Lin Wu",
+        "nationality": "CN",
+        "ownership_pct": 39.6,
+        "path": ["riverside_commerce_llc", "wu_pacific_investments_ltd", "lin_wu"],
+        "ubo_by_control": false
+      }
+    ],
+    "risk_level": "low",
+    "memo_type": "ubo_resolution"
+  }
+}

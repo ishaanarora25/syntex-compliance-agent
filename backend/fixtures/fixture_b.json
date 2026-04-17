@@ -1,0 +1,208 @@
+{
+  "fixture_id": "fixture_b",
+  "label": "Scenario B — Irrevocable Trust + Adverse Media",
+  "scenario": "B",
+  "description": "High-risk EDD file: Delaware LLC with split ownership between a California operating company (70/30 split between a Mexican national and a US citizen) and a California irrevocable trust. Adverse media on the Mexican national principal. OFAC potential match. Full EDD memo required.",
+  "entities": [
+    {
+      "entity_id": "nexus_properties_llc",
+      "label": "Nexus Properties Group LLC",
+      "entity_type": "company",
+      "entity_subtype": "LLC",
+      "jurisdiction": "Delaware, USA",
+      "is_root": true,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "pacific_ridge_ventures_llc",
+      "label": "Pacific Ridge Ventures LLC",
+      "entity_type": "company",
+      "entity_subtype": "LLC",
+      "jurisdiction": "California, USA",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "chen_family_irrevocable_trust",
+      "label": "Chen Family Irrevocable Trust of 2019",
+      "entity_type": "trust",
+      "entity_subtype": "irrevocable_trust",
+      "jurisdiction": "California, USA",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null,
+      "grantor_ids": ["thomas_chen"],
+      "grantor_pcts": {"thomas_chen": 1.0},
+      "beneficiary_ids": [],
+      "beneficiary_pcts": {},
+      "discretionary": false
+    },
+    {
+      "entity_id": "elena_vargas",
+      "label": "Elena Maria Vargas",
+      "entity_type": "individual",
+      "entity_subtype": null,
+      "jurisdiction": "Mexico City, Mexico",
+      "nationality": "MX",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": ["adverse_media"],
+      "adverse_media": {
+        "headline": "Constructora ligada a escándalo de sobornos en contratos federales",
+        "source": "Reforma (Mexico) / Reuters",
+        "date": "June 2022",
+        "disposition": "Charges dropped August 2022 — investigation closed by FGR",
+        "summary": "Named in 2022 Mexican federal bribery investigation (FGR) related to infrastructure contract awards. Investigation closed; charges formally dropped. Elevated BSA risk classification."
+      }
+    },
+    {
+      "entity_id": "thomas_chen",
+      "label": "Thomas Wei-Liang Chen",
+      "entity_type": "individual",
+      "entity_subtype": null,
+      "jurisdiction": "San Francisco, California, USA",
+      "nationality": "US",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null
+    }
+  ],
+  "edges": [
+    {
+      "edge_id": "e1",
+      "source": "nexus_properties_llc",
+      "target": "pacific_ridge_ventures_llc",
+      "ownership_pct": 55.0,
+      "doc_id": "nexus_properties_articles",
+      "page": 2
+    },
+    {
+      "edge_id": "e2",
+      "source": "nexus_properties_llc",
+      "target": "chen_family_irrevocable_trust",
+      "ownership_pct": 45.0,
+      "doc_id": "nexus_properties_articles",
+      "page": 2
+    },
+    {
+      "edge_id": "e3",
+      "source": "pacific_ridge_ventures_llc",
+      "target": "elena_vargas",
+      "ownership_pct": 70.0,
+      "doc_id": "pacific_ridge_operating_agreement",
+      "page": 2
+    },
+    {
+      "edge_id": "e4",
+      "source": "pacific_ridge_ventures_llc",
+      "target": "thomas_chen",
+      "ownership_pct": 30.0,
+      "doc_id": "pacific_ridge_operating_agreement",
+      "page": 2
+    }
+  ],
+  "documents": [
+    {
+      "doc_id": "nexus_properties_articles",
+      "label": "Nexus Properties Group LLC Certificate of Formation",
+      "doc_type": "articles_of_organization",
+      "pages": [
+        {
+          "page": 1,
+          "text": "CERTIFICATE OF FORMATION OF NEXUS PROPERTIES GROUP LLC\nState of Delaware\n\nThis Certificate of Formation is filed in accordance with Section 18-201 of the Delaware Limited Liability Company Act.\n\nFIRST: The name of the limited liability company is Nexus Properties Group LLC.\nSECOND: The address of the registered office is 3500 South DuPont Highway, Dover, Delaware 19901.\nTHIRD: The registered agent is Incorporating Services, Ltd.\n\nDate of Filing: March 22, 2020.\nSigned: Thomas Wei-Liang Chen, Authorized Person"
+        },
+        {
+          "page": 2,
+          "text": "ARTICLE II — OWNERSHIP STRUCTURE\n\nThe Company is owned by the following members in the percentages set forth below:\n\n(1) Pacific Ridge Ventures LLC, a California limited liability company with its principal office at 550 Montgomery Street, Suite 1200, San Francisco, California 94111, holding fifty-five percent (55%) of the total membership interests in the Company.\n\n(2) The Chen Family Irrevocable Trust of 2019, established under the laws of the State of California, with Thomas Wei-Liang Chen serving as Trustee, holding forty-five percent (45%) of the total membership interests in the Company.\n\nTotal membership interests held: one hundred percent (100%)."
+        },
+        {
+          "page": 3,
+          "text": "ARTICLE III — MANAGEMENT\n\nThe Company shall be member-managed. Day-to-day management decisions shall require approval of members holding a majority interest. Major decisions, including the sale of Company assets in excess of $500,000 and the admission of new members, shall require unanimous consent of all members.\n\nThomas Wei-Liang Chen is designated as the initial Managing Member and shall serve until removed or replaced by a vote of the members."
+        }
+      ]
+    },
+    {
+      "doc_id": "pacific_ridge_operating_agreement",
+      "label": "Pacific Ridge Ventures LLC Operating Agreement",
+      "doc_type": "operating_agreement",
+      "pages": [
+        {
+          "page": 1,
+          "text": "OPERATING AGREEMENT OF PACIFIC RIDGE VENTURES LLC\nA California Limited Liability Company\n\nThis Operating Agreement is effective as of November 15, 2019 and is entered into among the members of Pacific Ridge Ventures LLC (the \"Company\"), a limited liability company organized under the California Revised Uniform Limited Liability Company Act (the \"Act\").\n\nARTICLE I — FORMATION\nThe Company was organized as a California limited liability company on November 1, 2019 by filing Articles of Organization with the California Secretary of State."
+        },
+        {
+          "page": 2,
+          "text": "ARTICLE II — MEMBERSHIP INTERESTS AND CAPITAL CONTRIBUTIONS\n\nSection 2.1 — Members and Interests. The members of the Company and their respective membership interest percentages are as follows:\n\nElena Maria Vargas, a citizen of Mexico, the holder of Mexican passport number AG-849302, with a residential address at Calle Reforma 847, Colonia Cuauhtémoc, Mexico City, Mexico 06500: seventy percent (70%) membership interest.\n\nThomas Wei-Liang Chen, a citizen of the United States, residing at 428 Pacific Avenue, San Francisco, California 94133: thirty percent (30%) membership interest.\n\nTotal: one hundred percent (100%)."
+        },
+        {
+          "page": 3,
+          "text": "ARTICLE III — MANAGEMENT AND VOTING\n\nSection 3.1 — Management Structure. The Company shall be managed by its members in proportion to membership interest percentages.\n\nSection 3.2 — Voting Rights. Each member shall have voting rights proportionate to their percentage membership interest. A vote of members holding at least seventy-five percent (75%) of the outstanding membership interests shall be required for major decisions.\n\nSection 3.3 — Distributions. Net cash from operations shall be distributed to the members quarterly in proportion to membership interest percentages."
+        }
+      ]
+    },
+    {
+      "doc_id": "chen_irrevocable_trust_2019",
+      "label": "Chen Family Irrevocable Trust of 2019",
+      "doc_type": "trust_agreement",
+      "pages": [
+        {
+          "page": 1,
+          "text": "THE CHEN FAMILY IRREVOCABLE TRUST OF 2019\n\nThis Irrevocable Trust Agreement is executed on August 3, 2019, by THOMAS WEI-LIANG CHEN, residing at 428 Pacific Avenue, San Francisco, California 94133, as both Settlor and Trustee.\n\nARTICLE 1 — CREATION OF IRREVOCABLE TRUST\nThe Settlor hereby creates and establishes an irrevocable trust (the \"Trust\") for the benefit of the Settlor's minor children. This Trust is irrevocable and shall not be amended, modified, or revoked by any party without an order of a court of competent jurisdiction."
+        },
+        {
+          "page": 2,
+          "text": "ARTICLE 2 — TRUSTEE AUTHORITY AND POWERS\n\nSection 2.1 — Appointment. Thomas Wei-Liang Chen is hereby appointed as the initial Trustee of this Trust.\n\nSection 2.2 — Powers of Trustee. The Trustee shall have full power and authority to manage, invest, and dispose of all Trust assets, including but not limited to: (a) acquiring and selling real property and business interests; (b) executing contracts and agreements on behalf of the Trust; (c) directing all financial and operational affairs of Trust assets; (d) voting membership interests held by the Trust in any limited liability company.\n\nSection 2.3 — Trust Assets. As of the date hereof, Trust assets include a forty-five percent (45%) membership interest in Nexus Properties Group LLC, a Delaware limited liability company, held in the name of the Trustee on behalf of the Trust."
+        },
+        {
+          "page": 3,
+          "text": "ARTICLE 3 — IRREVOCABILITY, BENEFICIARIES, AND DISTRIBUTIONS\n\nSection 3.1 — Irrevocability. This Trust is irrevocable. The Settlor has relinquished all ownership and control rights with respect to the Trust assets, except in Thomas Wei-Liang Chen's separate capacity as Trustee.\n\nSection 3.2 — Beneficiaries. The beneficiaries of this Trust are the living minor children of Thomas Wei-Liang Chen and his spouse.\n\nSection 3.3 — Distributions. The Trustee, in the Trustee's sole discretion, may distribute income or principal to or for the benefit of the beneficiaries for their health, education, maintenance, and support.\n\nNote: As Trustee, Thomas Wei-Liang Chen holds full disposition authority over all Trust assets and is the controlling party for all regulatory, contractual, and beneficial ownership determination purposes with respect to the Trust's 45% interest in Nexus Properties Group LLC."
+        }
+      ]
+    },
+    {
+      "doc_id": "adverse_media_vargas",
+      "label": "Adverse Media Report — Elena Maria Vargas",
+      "doc_type": "adverse_media_report",
+      "pages": [
+        {
+          "page": 1,
+          "text": "ADVERSE MEDIA REPORT — ELENA MARIA VARGAS\n\nSOURCE 1: Reforma (Mexican national newspaper), June 14, 2022\nHEADLINE: \"Constructora ligada a escándalo de sobornos en contratos federales\" (Construction firm linked to federal bribery scandal)\n\nSUMMARY: The Fiscalía General de la República (FGR), Mexico's federal prosecutor's office, announced on June 12, 2022 that it has opened a formal investigation into alleged bribery related to the award of federal infrastructure contracts valued at approximately 2.3 billion Mexican pesos. Among the individuals named in the preliminary investigation is Elena Maria Vargas, identified as a primary shareholder of Pacific Ridge Ventures LLC, a California-registered real estate investment company with cross-border operations. The investigation concerns alleged payments to officials at Mexico's Secretaría de Infraestructura, Comunicaciones y Transportes (SICT) in exchange for preferential treatment in awarding public works contracts during 2019 to 2021."
+        },
+        {
+          "page": 2,
+          "text": "SOURCE 2: Reuters, August 29, 2022\nHEADLINE: \"Mexico drops bribery charges against real estate investor Elena Vargas\"\n\nFULL TEXT: Mexico's federal prosecutor's office (FGR) announced on August 26, 2022 that it has formally closed its investigation into Elena Maria Vargas following an evidentiary review. Prosecutors stated that while the investigation identified circumstantial connections between Vargas and companies that received federal infrastructure contracts, insufficient direct evidence was available to support formal charges. Vargas's legal counsel issued a statement calling the original investigation \"politically motivated\" and confirmed that all preliminary charges have been dropped and the case is formally closed. Vargas has declined to comment publicly. The FGR noted that closure of the investigation does not preclude reopening if new material evidence emerges."
+        },
+        {
+          "page": 3,
+          "text": "ADVERSE MEDIA ASSESSMENT SUMMARY\n\nSubject: Elena Maria Vargas\nNationality: Mexican\nDate of Review: April 2026\nSources: Reforma (Mexico), Reuters\n\nNature of Allegation: Bribery and corruption — alleged payments to government officials in connection with federal infrastructure contract awards in Mexico (2019–2021).\n\nDisposition: Investigation opened June 2022 by FGR; charges formally dropped and investigation closed August 2022. No conviction recorded. Case remains closeable to reopening per FGR statement.\n\nBSA Risk Factors:\n(1) Named in federal bribery investigation, notwithstanding eventual dismissal;\n(2) Foreign national (Mexico) with cross-border business interests;\n(3) Connection to government contracting and infrastructure sector;\n(4) Adverse media creates public record of regulatory concern.\n\nBSA Risk Classification: ELEVATED. Enhanced Due Diligence required per Bank Secrecy Act and FinCEN guidance on senior foreign political figures and persons with adverse media history."
+        }
+      ]
+    }
+  ],
+  "answer_key": {
+    "resolved_ubos": [
+      {
+        "name": "Elena Maria Vargas",
+        "nationality": "MX",
+        "ownership_pct": 38.5,
+        "path": ["nexus_properties_llc", "pacific_ridge_ventures_llc", "elena_vargas"],
+        "ubo_by_control": false
+      },
+      {
+        "name": "Thomas Wei-Liang Chen",
+        "nationality": "US",
+        "ownership_pct": 16.5,
+        "path": ["nexus_properties_llc", "chen_family_irrevocable_trust", "thomas_chen"],
+        "ubo_by_control": true
+      }
+    ],
+    "risk_level": "high",
+    "memo_type": "full_edd"
+  }
+}

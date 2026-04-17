@@ -1,0 +1,27 @@
+import { NextRequest, NextResponse } from "next/server";
+
+// Bypass the rewrite proxy for /analyze — it can take 60-90s (full EDD memo via Claude)
+// and Next.js's http-proxy times out after ~60s of socket inactivity.
+// A Route Handler uses node-fetch directly with no idle-socket timeout.
+export async function POST(request: NextRequest) {
+  const body = await request.json();
+
+  let response: Response;
+  try {
+    response = await fetch("http://localhost:8001/api/edd/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      // @ts-expect-error — Node.js fetch supports signal for abort, no built-in timeout needed
+      signal: AbortSignal.timeout(180_000), // 3-minute hard cap
+    });
+  } catch (err) {
+    return NextResponse.json(
+      { detail: "proxy_error", message: "Backend unreachable or timed out." },
+      { status: 502 }
+    );
+  }
+
+  const data = await response.json();
+  return NextResponse.json(data, { status: response.status });
+}

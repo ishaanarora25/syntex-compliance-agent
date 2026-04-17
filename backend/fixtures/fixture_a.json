@@ -1,0 +1,146 @@
+{
+  "fixture_id": "fixture_a",
+  "label": "Scenario A — Nested LLC + Revocable Trust",
+  "scenario": "A",
+  "description": "Clean UBO resolution: Delaware LLC owned through a Wyoming holding company and a California revocable trust. Single US-citizen UBO. No adverse media or OFAC findings.",
+  "entities": [
+    {
+      "entity_id": "apex_capital_llc",
+      "label": "Apex Capital LLC",
+      "entity_type": "company",
+      "entity_subtype": "LLC",
+      "jurisdiction": "Delaware, USA",
+      "is_root": true,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "apex_holdings_llc",
+      "label": "Apex Holdings LLC",
+      "entity_type": "company",
+      "entity_subtype": "LLC",
+      "jurisdiction": "Wyoming, USA",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "smith_family_revocable_trust",
+      "label": "The Smith Family Revocable Trust",
+      "entity_type": "trust",
+      "entity_subtype": "revocable_trust",
+      "jurisdiction": "California, USA",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null,
+      "grantor_ids": ["james_r_smith"],
+      "grantor_pcts": {"james_r_smith": 1.0},
+      "discretionary": false
+    },
+    {
+      "entity_id": "james_r_smith",
+      "label": "James Robert Smith",
+      "entity_type": "individual",
+      "entity_subtype": null,
+      "jurisdiction": "California, USA",
+      "nationality": "US",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null
+    }
+  ],
+  "edges": [
+    {
+      "edge_id": "e1",
+      "source": "apex_capital_llc",
+      "target": "apex_holdings_llc",
+      "ownership_pct": 100.0,
+      "doc_id": "apex_capital_articles",
+      "page": 2
+    },
+    {
+      "edge_id": "e2",
+      "source": "apex_holdings_llc",
+      "target": "smith_family_revocable_trust",
+      "ownership_pct": 100.0,
+      "doc_id": "apex_holdings_operating_agreement",
+      "page": 2
+    }
+  ],
+  "documents": [
+    {
+      "doc_id": "apex_capital_articles",
+      "label": "Apex Capital LLC Articles of Organization",
+      "doc_type": "articles_of_organization",
+      "pages": [
+        {
+          "page": 1,
+          "text": "CERTIFICATE OF FORMATION\nAPEX CAPITAL LLC\nState of Delaware\n\nThis Certificate of Formation is filed in accordance with Section 18-201 of the Delaware Limited Liability Company Act.\n\nFIRST: The name of the limited liability company is Apex Capital LLC.\nSECOND: The address of its registered office in the State of Delaware is 1209 Orange Street, City of Wilmington, County of New Castle, Delaware 19801.\nTHIRD: The name and address of its registered agent is The Corporation Trust Company, 1209 Orange Street, Wilmington, Delaware 19801.\n\nDate of Formation: February 14, 2019\n\nSigned: James R. Smith, Authorized Person"
+        },
+        {
+          "page": 2,
+          "text": "MEMBERSHIP AND OWNERSHIP\n\nThe Company is a single-member limited liability company. The sole member is Apex Holdings LLC, a limited liability company organized and existing under the laws of the State of Wyoming, with its principal office at 123 Main Street, Suite 400, Cheyenne, Wyoming 82001.\n\nApex Holdings LLC holds one hundred percent (100%) of the membership interests in Apex Capital LLC as of the date of this filing.\n\nNo other persons or entities hold any membership interest in the Company."
+        },
+        {
+          "page": 3,
+          "text": "MANAGEMENT AND OPERATIONS\n\nThe Company shall be managed by its member. The managing member, Apex Holdings LLC, acting through its designated representative, shall have full authority to conduct all business of Apex Capital LLC, including but not limited to entering into contracts, acquiring and disposing of assets, and operating bank accounts.\n\nPrincipal business activities: Real estate investment and asset management.\nFiscal year end: December 31."
+        }
+      ]
+    },
+    {
+      "doc_id": "apex_holdings_operating_agreement",
+      "label": "Apex Holdings LLC Operating Agreement",
+      "doc_type": "operating_agreement",
+      "pages": [
+        {
+          "page": 1,
+          "text": "OPERATING AGREEMENT OF APEX HOLDINGS LLC\nA Wyoming Limited Liability Company\n\nThis Operating Agreement (the \"Agreement\") is entered into as of January 10, 2019, by the member of Apex Holdings LLC (the \"Company\"), a limited liability company organized under the Wyoming Limited Liability Company Act.\n\nARTICLE I — NAME AND PRINCIPAL OFFICE\nThe name of the Company is Apex Holdings LLC. The principal office of the Company is located at 123 Main Street, Suite 400, Cheyenne, Wyoming 82001."
+        },
+        {
+          "page": 2,
+          "text": "ARTICLE II — MEMBERSHIP AND OWNERSHIP INTERESTS\n\nSection 2.1 — Sole Member. The Company has one member: The Smith Family Revocable Trust, established under the laws of the State of California, dated September 5, 2017, with James Robert Smith as Trustee (the \"Trust\"). The Trust holds one hundred percent (100%) of the membership interests in Apex Holdings LLC.\n\nSection 2.2 — Transfer Restrictions. No membership interest may be transferred, sold, or otherwise conveyed without the prior written consent of the managing member.\n\nSection 2.3 — Capital Contributions. The Trust contributed all initial capital to the Company on January 10, 2019."
+        },
+        {
+          "page": 3,
+          "text": "ARTICLE III — MANAGEMENT\n\nSection 3.1 — Managing Member. The Company shall be managed by James Robert Smith, acting in his individual capacity as the Trustee of The Smith Family Revocable Trust, as Managing Member.\n\nSection 3.2 — Authority of Managing Member. The Managing Member shall have full power and authority to manage and control the business and affairs of the Company, to make all decisions affecting the Company's business, and to execute and deliver all documents on behalf of the Company.\n\nSection 3.3 — Distributions. Distributions shall be made at the discretion of the Managing Member, proportionate to membership interest percentages."
+        }
+      ]
+    },
+    {
+      "doc_id": "smith_family_trust_agreement",
+      "label": "The Smith Family Revocable Trust Agreement",
+      "doc_type": "trust_agreement",
+      "pages": [
+        {
+          "page": 1,
+          "text": "THE SMITH FAMILY REVOCABLE TRUST\n\nThis Trust Agreement is made and executed this 5th day of September, 2017, by JAMES ROBERT SMITH (hereinafter referred to as both \"Grantor\" and \"Trustee\"), a citizen of the United States of America, residing at 2847 Laurel Canyon Boulevard, Los Angeles, California 90046.\n\nARTICLE 1 — CREATION OF TRUST\n\nThe Grantor hereby creates a revocable living trust to be known as THE SMITH FAMILY REVOCABLE TRUST (the \"Trust\"), for the benefit of the Grantor and his family during his lifetime and for distribution of assets upon his death as provided herein."
+        },
+        {
+          "page": 2,
+          "text": "ARTICLE 2 — TRUST PROPERTY AND ASSETS\n\nSection 2.1 — Initial Funding. The Grantor hereby transfers and assigns to this Trust all property described in Schedule A attached hereto, including a one hundred percent (100%) membership interest in Apex Holdings LLC, a Wyoming limited liability company.\n\nSection 2.2 — Management. The Trustee shall manage and invest the Trust property with the care, skill, and caution that a prudent investor would exercise in managing the overall portfolio.\n\nSection 2.3 — Income. All net income of the Trust shall be distributed to or for the benefit of the Grantor during his lifetime."
+        },
+        {
+          "page": 3,
+          "text": "ARTICLE 3 — REVOCABILITY\n\nSection 3.1 — Right of Revocation. During the lifetime of the Grantor, this Trust shall be fully revocable. The Grantor, JAMES ROBERT SMITH, may at any time and from time to time revoke this Trust Agreement in whole or in part, amend any of its terms, or withdraw any property from the Trust corpus, by delivering written notice to the Trustee.\n\nSection 3.2 — Tax Treatment. Because this Trust is revocable, JAMES ROBERT SMITH is treated as the owner of all Trust assets for federal and state income tax purposes and for all regulatory reporting purposes, including FinCEN beneficial ownership certification requirements. For purposes of beneficial ownership determination, James Robert Smith is the beneficial owner of all assets held by this Trust."
+        }
+      ]
+    }
+  ],
+  "answer_key": {
+    "resolved_ubos": [
+      {
+        "name": "James Robert Smith",
+        "nationality": "US",
+        "ownership_pct": 100.0,
+        "path": ["apex_capital_llc", "apex_holdings_llc", "smith_family_revocable_trust", "james_r_smith"],
+        "ubo_by_control": false
+      }
+    ],
+    "risk_level": "low",
+    "memo_type": "ubo_resolution"
+  }
+}

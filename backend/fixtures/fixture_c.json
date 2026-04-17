@@ -1,0 +1,340 @@
+{
+  "fixture_id": "fixture_c",
+  "label": "Stress Test C — 3-Level Nesting + German GmbH + Irrevocable Trust",
+  "scenario": "stress_c",
+  "description": "Complex UBO resolution: Delaware LLC with three-level ownership nesting including a German GmbH, a Delaware LP with a corporate general partner, and a California irrevocable trust. Multiple foreign nationals. No adverse media. Stress-tests deep graph traversal and multiple entity types.",
+  "entities": [
+    {
+      "entity_id": "summit_industrial_llc",
+      "label": "Summit Industrial Holdings LLC",
+      "entity_type": "company",
+      "entity_subtype": "LLC",
+      "jurisdiction": "Delaware, USA",
+      "is_root": true,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "alpine_peak_capital_llc",
+      "label": "Alpine Peak Capital LLC",
+      "entity_type": "company",
+      "entity_subtype": "LLC",
+      "jurisdiction": "Wyoming, USA",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "coastal_dev_partners_lp",
+      "label": "Coastal Development Partners LP",
+      "entity_type": "company",
+      "entity_subtype": "LP",
+      "jurisdiction": "Delaware, USA",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "mitchell_irrevocable_trust",
+      "label": "Mitchell Family Irrevocable Trust",
+      "entity_type": "trust",
+      "entity_subtype": "irrevocable_trust",
+      "jurisdiction": "California, USA",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null,
+      "grantor_ids": ["sarah_mitchell"],
+      "grantor_pcts": {"sarah_mitchell": 1.0},
+      "beneficiary_ids": [],
+      "beneficiary_pcts": {},
+      "discretionary": false
+    },
+    {
+      "entity_id": "bergmann_verwaltungs_gmbh",
+      "label": "Bergmann Verwaltungs GmbH",
+      "entity_type": "company",
+      "entity_subtype": "GmbH",
+      "jurisdiction": "Frankfurt am Main, Germany",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "sarah_mitchell",
+      "label": "Sarah Jane Mitchell",
+      "entity_type": "individual",
+      "entity_subtype": null,
+      "jurisdiction": "Los Angeles, California, USA",
+      "nationality": "US",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "coastal_dev_management_llc",
+      "label": "Coastal Dev Management LLC",
+      "entity_type": "company",
+      "entity_subtype": "LLC",
+      "jurisdiction": "Delaware, USA",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "yuki_tanaka",
+      "label": "Yuki Tanaka",
+      "entity_type": "individual",
+      "entity_subtype": null,
+      "jurisdiction": "Tokyo, Japan",
+      "nationality": "JP",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "david_park",
+      "label": "David Jae-Won Park",
+      "entity_type": "individual",
+      "entity_subtype": null,
+      "jurisdiction": "San Diego, California, USA",
+      "nationality": "US",
+      "is_root": false,
+      "has_control_rights": true,
+      "risk_flags": [],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "klaus_bergmann",
+      "label": "Klaus Heinrich Bergmann",
+      "entity_type": "individual",
+      "entity_subtype": null,
+      "jurisdiction": "Frankfurt am Main, Germany",
+      "nationality": "DE",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null
+    }
+  ],
+  "edges": [
+    {
+      "edge_id": "e1",
+      "source": "summit_industrial_llc",
+      "target": "alpine_peak_capital_llc",
+      "ownership_pct": 50.0,
+      "doc_id": "summit_industrial_articles",
+      "page": 2
+    },
+    {
+      "edge_id": "e2",
+      "source": "summit_industrial_llc",
+      "target": "coastal_dev_partners_lp",
+      "ownership_pct": 25.0,
+      "doc_id": "summit_industrial_articles",
+      "page": 2
+    },
+    {
+      "edge_id": "e3",
+      "source": "summit_industrial_llc",
+      "target": "mitchell_irrevocable_trust",
+      "ownership_pct": 25.0,
+      "doc_id": "summit_industrial_articles",
+      "page": 2
+    },
+    {
+      "edge_id": "e4",
+      "source": "alpine_peak_capital_llc",
+      "target": "bergmann_verwaltungs_gmbh",
+      "ownership_pct": 60.0,
+      "doc_id": "alpine_peak_operating_agreement",
+      "page": 2
+    },
+    {
+      "edge_id": "e5",
+      "source": "alpine_peak_capital_llc",
+      "target": "sarah_mitchell",
+      "ownership_pct": 40.0,
+      "doc_id": "alpine_peak_operating_agreement",
+      "page": 2
+    },
+    {
+      "edge_id": "e6",
+      "source": "coastal_dev_partners_lp",
+      "target": "coastal_dev_management_llc",
+      "ownership_pct": 1.0,
+      "doc_id": "coastal_dev_lp_agreement",
+      "page": 2
+    },
+    {
+      "edge_id": "e7",
+      "source": "coastal_dev_partners_lp",
+      "target": "david_park",
+      "ownership_pct": 79.2,
+      "doc_id": "coastal_dev_lp_agreement",
+      "page": 2
+    },
+    {
+      "edge_id": "e8",
+      "source": "coastal_dev_partners_lp",
+      "target": "yuki_tanaka",
+      "ownership_pct": 19.8,
+      "doc_id": "coastal_dev_lp_agreement",
+      "page": 2
+    },
+    {
+      "edge_id": "e9",
+      "source": "coastal_dev_management_llc",
+      "target": "david_park",
+      "ownership_pct": 100.0,
+      "doc_id": "coastal_dev_management_articles",
+      "page": 1
+    },
+    {
+      "edge_id": "e10",
+      "source": "bergmann_verwaltungs_gmbh",
+      "target": "klaus_bergmann",
+      "ownership_pct": 100.0,
+      "doc_id": "bergmann_gmbh_extract",
+      "page": 2
+    }
+  ],
+  "documents": [
+    {
+      "doc_id": "summit_industrial_articles",
+      "label": "Summit Industrial Holdings LLC Articles of Organization",
+      "doc_type": "articles_of_organization",
+      "pages": [
+        {
+          "page": 1,
+          "text": "CERTIFICATE OF FORMATION\nSUMMIT INDUSTRIAL HOLDINGS LLC\nState of Delaware\n\nFirst: The name of the limited liability company is Summit Industrial Holdings LLC.\nSecond: Registered office: 251 Little Falls Drive, Wilmington, Delaware 19808.\nThird: Registered Agent: Corporation Service Company.\n\nDate of Formation: April 7, 2018.\nPurpose: Industrial real estate investment and asset management."
+        },
+        {
+          "page": 2,
+          "text": "OWNERSHIP STRUCTURE AS OF DATE OF FORMATION\n\nThe Company is owned by the following members:\n(1) Alpine Peak Capital LLC, a Wyoming limited liability company: fifty percent (50%) membership interest.\n(2) Coastal Development Partners LP, a Delaware limited partnership: twenty-five percent (25%) membership interest.\n(3) Mitchell Family Irrevocable Trust (California), with Sarah Jane Mitchell as Trustee: twenty-five percent (25%) membership interest.\n\nTotal: one hundred percent (100%).\n\nManagement: The Company is managed by its members in proportion to membership interests."
+        },
+        {
+          "page": 3,
+          "text": "PRINCIPAL BUSINESS ACTIVITIES\n\nSummit Industrial Holdings LLC is engaged in the acquisition, development, and management of industrial real estate properties throughout the Western United States. The Company's portfolio includes distribution centers, light manufacturing facilities, and flex industrial spaces. Primary revenue sources: rental income from long-term commercial leases."
+        }
+      ]
+    },
+    {
+      "doc_id": "alpine_peak_operating_agreement",
+      "label": "Alpine Peak Capital LLC Operating Agreement",
+      "doc_type": "operating_agreement",
+      "pages": [
+        {
+          "page": 1,
+          "text": "OPERATING AGREEMENT OF ALPINE PEAK CAPITAL LLC\nA Wyoming Limited Liability Company\n\nThis Agreement is effective January 15, 2018. Alpine Peak Capital LLC is organized under the Wyoming Limited Liability Company Act with its principal office at 1720 Big Horn Avenue, Suite 100, Cody, Wyoming 82414."
+        },
+        {
+          "page": 2,
+          "text": "ARTICLE II — MEMBERSHIP INTERESTS\n\nSection 2.1 — Members. The Company has two members:\n\n(a) Bergmann Verwaltungs GmbH, a Gesellschaft mit beschränkter Haftung (limited liability company) organized under the laws of the Federal Republic of Germany, registered in the Commercial Register of the Frankfurt am Main District Court under HRB 52847, with registered office at Bockenheimer Landstrasse 24, 60323 Frankfurt am Main, Germany: sixty percent (60%) membership interest.\n\n(b) Sarah Jane Mitchell, a citizen of the United States of America, residing at 1847 Mulholland Drive, Los Angeles, California 90046: forty percent (40%) membership interest."
+        },
+        {
+          "page": 3,
+          "text": "ARTICLE III — MANAGEMENT\n\nSection 3.1 — Co-Management. The Company is managed by both members. Major decisions require approval of members holding 75% or more of the membership interests. Day-to-day operations may be delegated to Sarah Jane Mitchell as designated Managing Member for U.S. operations.\n\nSection 3.2 — Distributions. Distributions are made quarterly in proportion to membership interest percentages."
+        }
+      ]
+    },
+    {
+      "doc_id": "bergmann_gmbh_extract",
+      "label": "Bergmann Verwaltungs GmbH Commercial Register Extract",
+      "doc_type": "commercial_register_extract",
+      "pages": [
+        {
+          "page": 1,
+          "text": "HANDELSREGISTERAUSZUG (COMMERCIAL REGISTER EXTRACT)\nAmtsgericht Frankfurt am Main — HRB 52847\n\nFirma (Company Name): Bergmann Verwaltungs GmbH\nSitz (Registered Office): Frankfurt am Main\nGeschäftsanschrift (Business Address): Bockenheimer Landstrasse 24, 60323 Frankfurt am Main\nGegenstand (Business Object): Verwaltung eigener Vermögenswerte und Beteiligungen (Management of own assets and investments)\n\nGründungsdatum (Date of Incorporation): 15. März 2005\nStammkapital (Share Capital): EUR 25,000"
+        },
+        {
+          "page": 2,
+          "text": "GESELLSCHAFTER (SHAREHOLDERS)\n\nEinziger Gesellschafter (Sole Shareholder):\nName: Klaus Heinrich Bergmann\nGeburtsdatum (Date of Birth): 22. September 1968\nWohnort (Place of Residence): Sachsenhausen, Frankfurt am Main, Federal Republic of Germany\nNationalität (Nationality): German\n\nGeschäftsanteil (Share): EUR 25,000 — representing one hundred percent (100%) of the share capital of Bergmann Verwaltungs GmbH.\n\nGeschäftsführer (Managing Director): Klaus Heinrich Bergmann"
+        },
+        {
+          "page": 3,
+          "text": "GESCHÄFTSFÜHRER UND VERTRETUNG (MANAGEMENT AND REPRESENTATION)\n\nKlaus Heinrich Bergmann is the sole managing director (Geschäftsführer) of Bergmann Verwaltungs GmbH and is authorized to represent the Company individually in all matters.\n\nThe Company holds a sixty percent (60%) membership interest in Alpine Peak Capital LLC, a Wyoming limited liability company, as part of its international investment portfolio."
+        }
+      ]
+    },
+    {
+      "doc_id": "coastal_dev_lp_agreement",
+      "label": "Coastal Development Partners LP Limited Partnership Agreement",
+      "doc_type": "limited_partnership_agreement",
+      "pages": [
+        {
+          "page": 1,
+          "text": "LIMITED PARTNERSHIP AGREEMENT\nCOASTAL DEVELOPMENT PARTNERS LP\nA Delaware Limited Partnership\n\nThis Agreement is made effective March 1, 2017. Coastal Development Partners LP is organized as a Delaware limited partnership pursuant to the Delaware Revised Uniform Limited Partnership Act.\n\nGeneral Partner: Coastal Dev Management LLC, a Delaware limited liability company.\nPrincipal Office: 8900 Civic Center Drive, Suite 200, San Diego, California 92123."
+        },
+        {
+          "page": 2,
+          "text": "PARTNERSHIP INTERESTS\n\nGeneral Partner Interest:\nCoastal Dev Management LLC (General Partner): one percent (1%) general partnership interest. The General Partner has sole and exclusive authority to manage and control the business and affairs of the Partnership.\n\nLimited Partnership Interests:\nDavid Jae-Won Park, a citizen of the United States, residing at 4521 Ocean View Boulevard, San Diego, California 92109: seventy-nine and two-tenths percent (79.2%) limited partnership interest.\n\nYuki Tanaka, a citizen of Japan, residing at 2-14-8 Minami-Aoyama, Minato-ku, Tokyo 107-0062, Japan: nineteen and eight-tenths percent (19.8%) limited partnership interest.\n\nTotal: 1% + 79.2% + 19.8% = 100%."
+        },
+        {
+          "page": 3,
+          "text": "MANAGEMENT AUTHORITY\n\nCoastal Dev Management LLC, as General Partner, has exclusive authority to:\n(a) manage all day-to-day operations of the Partnership;\n(b) execute contracts and agreements binding on the Partnership;\n(c) acquire and dispose of Partnership assets;\n(d) vote and exercise all rights with respect to interests in entities held by the Partnership.\n\nLimited partners have no management authority. David Jae-Won Park, as sole member of the General Partner entity, ultimately controls all management decisions of the Partnership."
+        }
+      ]
+    },
+    {
+      "doc_id": "coastal_dev_management_articles",
+      "label": "Coastal Dev Management LLC Articles of Organization",
+      "doc_type": "articles_of_organization",
+      "pages": [
+        {
+          "page": 1,
+          "text": "CERTIFICATE OF FORMATION — COASTAL DEV MANAGEMENT LLC\nState of Delaware\n\nCoastal Dev Management LLC is organized as a Delaware limited liability company.\nSole Member and Manager: David Jae-Won Park, citizen of the United States, residing at 4521 Ocean View Boulevard, San Diego, California 92109.\nDavid Jae-Won Park holds one hundred percent (100%) of the membership interests in Coastal Dev Management LLC and serves as its sole Manager.\nDate of Formation: February 10, 2017."
+        }
+      ]
+    },
+    {
+      "doc_id": "mitchell_irrevocable_trust",
+      "label": "Mitchell Family Irrevocable Trust Agreement",
+      "doc_type": "trust_agreement",
+      "pages": [
+        {
+          "page": 1,
+          "text": "MITCHELL FAMILY IRREVOCABLE TRUST\n\nThis Irrevocable Trust Agreement is made on October 12, 2016 by SARAH JANE MITCHELL, residing at 1847 Mulholland Drive, Los Angeles, California 90046, as Settlor, and SARAH JANE MITCHELL as initial Trustee.\n\nARTICLE 1 — CREATION OF IRREVOCABLE TRUST\nThis Trust is irrevocable and may not be revoked, amended, or modified without court approval. The Settlor has relinquished all beneficial ownership in the Trust assets."
+        },
+        {
+          "page": 2,
+          "text": "ARTICLE 2 — TRUSTEE POWERS\n\nTrustee: Sarah Jane Mitchell.\nThe Trustee has full power and authority to manage, invest, and dispose of all Trust assets, including a twenty-five percent (25%) membership interest in Summit Industrial Holdings LLC, a Delaware limited liability company.\nThe Trustee may exercise all voting and consent rights associated with the Trust's membership interest in Summit Industrial Holdings LLC.\n\nARTICLE 3 — BENEFICIARIES\nBeneficiaries: The living children of Sarah Jane Mitchell."
+        }
+      ]
+    }
+  ],
+  "answer_key": {
+    "resolved_ubos": [
+      {
+        "name": "Klaus Heinrich Bergmann",
+        "nationality": "DE",
+        "ownership_pct": 30.0,
+        "path": ["summit_industrial_llc", "alpine_peak_capital_llc", "bergmann_verwaltungs_gmbh", "klaus_bergmann"],
+        "ubo_by_control": false
+      },
+      {
+        "name": "Sarah Jane Mitchell",
+        "nationality": "US",
+        "ownership_pct": 20.0,
+        "path": ["summit_industrial_llc", "alpine_peak_capital_llc", "sarah_mitchell"],
+        "ubo_by_control": true
+      },
+      {
+        "name": "David Jae-Won Park",
+        "nationality": "US",
+        "ownership_pct": 19.8,
+        "path": ["summit_industrial_llc", "coastal_dev_partners_lp", "david_park"],
+        "ubo_by_control": true
+      }
+    ],
+    "risk_level": "medium",
+    "memo_type": "ubo_resolution"
+  }
+}
