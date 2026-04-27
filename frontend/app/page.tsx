@@ -1,53 +1,76 @@
 "use client";
 
 import { AppHeader } from "@/components/layout/app-header";
-import { ScenarioControls } from "@/components/scenario/scenario-controls";
 import { useScenario } from "@/components/scenario/use-scenario";
 import { OwnershipGraph } from "@/components/graph/ownership-graph";
 import { MemoPanel } from "@/components/memo/memo-panel";
 import { AuditStrip } from "@/components/audit/audit-strip";
+import { CaseSidebar } from "@/components/case/case-sidebar";
+import { HomeView } from "@/components/case/home-view";
 
 export default function HomePage() {
-  const scenario = useScenario();
+  const s = useScenario();
+
+  // Show analysis layout once analysis is running or complete
+  const showAnalysis = s.isAnalyzing || !!s.analysisResult;
+
+  // Files staged without a case go to queueFiles; files added to an existing
+  // case upload immediately.
+  const handleAddFiles = s.activeCaseId ? s.uploadFiles : s.queueFiles;
 
   return (
     <div className="flex flex-col h-screen bg-background overflow-hidden">
       <AppHeader />
 
-      <div className="border-b border-border px-6 py-3">
-        <ScenarioControls
-          isLoading={scenario.isLoading}
-          activeFixtureId={scenario.analysisResult?.fixture_id ?? null}
-          riskLevel={scenario.analysisResult?.risk_level ?? null}
-          onLoadScenario={scenario.loadScenario}
-        />
-      </div>
-
-      {/* Main split panel */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Left: Ownership Graph */}
-        <div className="w-1/2 border-r border-border overflow-hidden">
-          <OwnershipGraph
-            nodes={scenario.analysisResult?.graph_nodes ?? []}
-            edges={scenario.analysisResult?.graph_edges ?? []}
-            isLoading={scenario.isLoading}
-          />
-        </div>
+        <CaseSidebar
+          cases={s.cases}
+          fixtures={s.fixtures}
+          activeCaseId={s.activeCaseId}
+          activeFixtureId={s.activeFixtureId}
+          isBusy={s.isLoading}
+          onCreateCase={s.createNewCase}
+          onSelectCase={s.selectCase}
+          onSelectFixture={s.selectFixture}
+        />
 
-        {/* Right: Memo + Reasoning Panel */}
-        <div className="w-1/2 overflow-hidden">
-          <MemoPanel
-            analysisResult={scenario.analysisResult}
-            memoSections={scenario.memoSections}
-            isLoading={scenario.isLoading}
-            onUpdateSection={scenario.updateSection}
-            onApproveDraft={scenario.approveDraft}
+        {showAnalysis ? (
+          <>
+            {/* Middle column: ownership graph */}
+            <div className="flex flex-col flex-1 min-w-0 border-r border-border overflow-hidden">
+              <OwnershipGraph
+                nodes={s.analysisResult?.graph_nodes ?? []}
+                edges={s.analysisResult?.graph_edges ?? []}
+                isLoading={s.isAnalyzing}
+              />
+            </div>
+
+            {/* Right column: memo + screenings + checklist + reasoning */}
+            <div className="w-[42%] min-w-[420px] overflow-hidden">
+              <MemoPanel
+                analysisResult={s.analysisResult}
+                memoSections={s.memoSections}
+                isLoading={s.isAnalyzing}
+                onUpdateSection={s.updateSection}
+                onApproveDraft={s.approveDraft}
+              />
+            </div>
+          </>
+        ) : (
+          <HomeView
+            pendingFiles={s.pendingFiles}
+            selectedCase={s.selectedCase}
+            selectedFixture={s.selectedFixture}
+            isUploading={s.isUploading}
+            isAnalyzing={s.isAnalyzing}
+            onAddFiles={handleAddFiles}
+            onRemovePendingFile={s.removePendingFile}
+            onAnalyze={s.runAnalysis}
           />
-        </div>
+        )}
       </div>
 
-      {/* Bottom: Audit log strip */}
-      <AuditStrip entries={scenario.auditLog} />
+      <AuditStrip entries={s.auditLog} />
     </div>
   );
 }

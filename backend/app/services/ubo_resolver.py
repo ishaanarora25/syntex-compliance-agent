@@ -1,6 +1,10 @@
 """
 UBO resolver: DFS traversal of the ownership graph applying trust look-through
 and the 25% beneficial ownership threshold per FinCEN CDD rules.
+
+Every UBO the resolver returns is screened against three stubbed lists
+(OFAC/SDN, PEP, adverse media) so the frontend can render a full KYC/KYB
+screening panel per individual.
 """
 
 from __future__ import annotations
@@ -14,10 +18,9 @@ from app.models import (
     Fixture,
     FixtureEdge,
     FixtureEntity,
-    OFACResult,
     ResolvedUBO,
 )
-from app.services import ofac_service
+from app.services import adverse_media_service, ofac_service, pep_service
 from app.services.trust_logic import (
     is_irrevocable,
     is_revocable,
@@ -32,7 +35,6 @@ UBO_THRESHOLD = 0.25
 
 
 def _page_excerpt(fixture: Fixture, doc_id: str, page: int) -> str:
-    """Pull up to 200 chars from the relevant fixture page for use as citation excerpt."""
     for doc in fixture.documents:
         if doc.doc_id == doc_id:
             for p in doc.pages:
@@ -48,22 +50,20 @@ def _doc_label(fixture: Fixture, doc_id: str) -> str:
     return doc_id
 
 
-def resolve(fixture: Fixture) -> List[ResolvedUBO]:
-    """
-    Resolve beneficial owners from the fixture.
+def _run_screenings(
+    entity: FixtureEntity,
+    entity_id: str,
+) -> Tuple["ofac_service.OFACResult", "pep_service.PEPResult", "adverse_media_service.AdverseMediaResult"]:
+    ofac = ofac_service.screen(entity_id, entity.label)
+    pep = pep_service.screen(entity_id, entity.label)
+    am = adverse_media_service.screen(entity_id, entity.label, entity.adverse_media)
+    return ofac, pep, am
 
-    Steps:
-    1. Build adjacency list (source → list of (target, edge)).
-    2. Find root entity (is_root=True).
-    3. DFS from root, accumulating effective ownership percentages.
-    4. On trust nodes: apply revocable or irrevocable look-through.
-    5. Aggregate % by individual across all paths.
-    6. Filter: keep if aggregated_pct >= 25% OR has_control_rights.
-    7. Screen each qualifying individual via OFAC stub.
-    """
+
+def resolve(fixture: Fixture) -> List[ResolvedUBO]:
+    """Resolve beneficial owners + run three-pillar screening per UBO."""
     entities_by_id: Dict[str, FixtureEntity] = {e.entity_id: e for e in fixture.entities}
 
-    # Adjacency list: source_id → [(target_id, edge)]
     adj: Dict[str, List[Tuple[str, FixtureEdge]]] = defaultdict(list)
     for edge in fixture.edges:
         adj[edge.source].append((edge.target, edge))
@@ -72,7 +72,6 @@ def resolve(fixture: Fixture) -> List[ResolvedUBO]:
     if root is None:
         raise ValueError("Fixture has no root entity")
 
-    # Accumulate: individual_id → (effective_pct, path, citations, control_only)
     accumulated: Dict[str, Dict] = {}
 
     def dfs(
@@ -90,7 +89,6 @@ def resolve(fixture: Fixture) -> List[ResolvedUBO]:
         if entity is None:
             return
 
-        # Leaf: individual entity
         if entity.entity_type == "individual":
             existing = accumulated.get(entity_id)
             if existing:
@@ -106,7 +104,6 @@ def resolve(fixture: Fixture) -> List[ResolvedUBO]:
                 }
             return
 
-        # Trust node: apply look-through
         if should_look_through(entity):
             if is_revocable(entity):
                 pass_through = resolve_grantor_passthrough(entity, entities_by_id, accumulated_pct)
@@ -137,7 +134,6 @@ def resolve(fixture: Fixture) -> List[ResolvedUBO]:
                         }
                 return
 
-        # Company / LP / other: traverse children
         for target_id, edge in adj.get(entity_id, []):
             edge_pct = edge.ownership_pct / 100.0
             new_pct = accumulated_pct * edge_pct
@@ -149,7 +145,6 @@ def resolve(fixture: Fixture) -> List[ResolvedUBO]:
             )
             dfs(target_id, new_pct, path + [target_id], citations + [new_citation], visited)
 
-    # Start DFS from each direct child of root
     for target_id, edge in adj.get(root.entity_id, []):
         edge_pct = edge.ownership_pct / 100.0
         citation = Citation(
@@ -160,21 +155,17 @@ def resolve(fixture: Fixture) -> List[ResolvedUBO]:
         )
         dfs(target_id, edge_pct, [root.entity_id, target_id], [citation], set())
 
-    # Filter and build ResolvedUBO list
     ubos: List[ResolvedUBO] = []
     for entity_id, data in accumulated.items():
         entity = entities_by_id[entity_id]
         pct = data["pct"]
         control_only = data["control_only"]
         qualifies = pct >= UBO_THRESHOLD or control_only or entity.has_control_rights
-
         if not qualifies:
             continue
 
-        # OFAC screening
-        ofac = ofac_service.screen(entity_id, entity.label)
+        ofac, pep, am = _run_screenings(entity, entity_id)
 
-        # Combine risk flags (deduplicate — fixture may already include some)
         risk_flags_set: set = set(entity.risk_flags)
         if entity.adverse_media:
             risk_flags_set.add("adverse_media")
@@ -184,9 +175,16 @@ def resolve(fixture: Fixture) -> List[ResolvedUBO]:
             risk_flags_set.add("ofac_potential_match")
         elif ofac.status == "confirmed_hit":
             risk_flags_set.add("ofac_confirmed_hit")
+        if pep.status == "potential_match":
+            risk_flags_set.add("pep_potential_match")
+        elif pep.status == "confirmed_pep":
+            risk_flags_set.add("pep_confirmed")
+        if am.status == "potential_match":
+            risk_flags_set.add("adverse_media_potential_match")
+        elif am.status == "confirmed_hit":
+            risk_flags_set.add("adverse_media_confirmed_hit")
         risk_flags = list(risk_flags_set)
 
-        # Deduplicate citations
         seen_cit = set()
         unique_citations: List[Citation] = []
         for c in data["citations"]:
@@ -195,7 +193,6 @@ def resolve(fixture: Fixture) -> List[ResolvedUBO]:
                 seen_cit.add(key)
                 unique_citations.append(c)
 
-        # Use the longest path for display
         best_path = max(data["paths"], key=len)
 
         ubos.append(
@@ -208,11 +205,12 @@ def resolve(fixture: Fixture) -> List[ResolvedUBO]:
                 risk_flags=risk_flags,
                 citations=unique_citations,
                 ofac_result=ofac,
+                pep_result=pep,
+                adverse_media_result=am,
                 ubo_by_control=control_only or entity.has_control_rights,
             )
         )
 
-    # Sort: highest risk first, then by ownership pct desc
     def sort_key(u: ResolvedUBO):
         risk_score = len(u.risk_flags) * 100 + u.ownership_pct
         return -risk_score

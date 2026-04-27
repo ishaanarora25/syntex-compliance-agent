@@ -1,0 +1,155 @@
+{
+  "scenarios": [
+    {
+      "scenario": "A",
+      "label": "Scenario A \u2014 Nested LLC + Revocable Trust",
+      "description": "Clean UBO resolution: Delaware LLC owned through a Wyoming holding company and a California revocable trust. Single US-citizen UBO. No adverse media or OFAC findings.",
+      "dir": "scenario_a",
+      "documents": [
+        {
+          "doc_id": "apex_capital_articles",
+          "label": "Apex Capital LLC Articles of Organization",
+          "doc_type": "articles_of_organization",
+          "file": "apex_capital_articles.pdf",
+          "pages": 3
+        },
+        {
+          "doc_id": "apex_holdings_operating_agreement",
+          "label": "Apex Holdings LLC Operating Agreement",
+          "doc_type": "operating_agreement",
+          "file": "apex_holdings_operating_agreement.pdf",
+          "pages": 3
+        },
+        {
+          "doc_id": "smith_family_trust_agreement",
+          "label": "The Smith Family Revocable Trust Agreement",
+          "doc_type": "trust_agreement",
+          "file": "smith_family_trust_agreement.pdf",
+          "pages": 3
+        }
+      ]
+    },
+    {
+      "scenario": "B",
+      "label": "Scenario B \u2014 Irrevocable Trust + Adverse Media",
+      "description": "High-risk EDD file: Delaware LLC with split ownership between a California operating company (70/30 split between a Mexican national and a US citizen) and a California irrevocable trust. Adverse media on the Mexican national principal. OFAC potential match. Full EDD memo required.",
+      "dir": "scenario_b",
+      "documents": [
+        {
+          "doc_id": "nexus_properties_articles",
+          "label": "Nexus Properties Group LLC Certificate of Formation",
+          "doc_type": "articles_of_organization",
+          "file": "nexus_properties_articles.pdf",
+          "pages": 3
+        },
+        {
+          "doc_id": "pacific_ridge_operating_agreement",
+          "label": "Pacific Ridge Ventures LLC Operating Agreement",
+          "doc_type": "operating_agreement",
+          "file": "pacific_ridge_operating_agreement.pdf",
+          "pages": 3
+        },
+        {
+          "doc_id": "chen_irrevocable_trust_2019",
+          "label": "Chen Family Irrevocable Trust of 2019",
+          "doc_type": "trust_agreement",
+          "file": "chen_irrevocable_trust_2019.pdf",
+          "pages": 3
+        },
+        {
+          "doc_id": "adverse_media_vargas",
+          "label": "Adverse Media Report \u2014 Elena Maria Vargas",
+          "doc_type": "adverse_media_report",
+          "file": "adverse_media_vargas.pdf",
+          "pages": 3
+        }
+      ]
+    },
+    {
+      "scenario": "stress_c",
+      "label": "Stress Test C \u2014 3-Level Nesting + German GmbH + Irrevocable Trust",
+      "description": "Complex UBO resolution: Delaware LLC with three-level ownership nesting including a German GmbH, a Delaware LP with a corporate general partner, and a California irrevocable trust. Multiple foreign nationals. No adverse media. Stress-tests deep graph traversal and multiple entity types.",
+      "dir": "scenario_c",
+      "documents": [
+        {
+          "doc_id": "summit_industrial_articles",
+          "label": "Summit Industrial Holdings LLC Articles of Organization",
+          "doc_type": "articles_of_organization",
+          "file": "summit_industrial_articles.pdf",
+          "pages": 3
+        },
+        {
+          "doc_id": "alpine_peak_operating_agreement",
+          "label": "Alpine Peak Capital LLC Operating Agreement",
+          "doc_type": "operating_agreement",
+          "file": "alpine_peak_operating_agreement.pdf",
+          "pages": 3
+        },
+        {
+          "doc_id": "bergmann_gmbh_extract",
+          "label": "Bergmann Verwaltungs GmbH Commercial Register Extract",
+          "doc_type": "commercial_register_extract",
+          "file": "bergmann_gmbh_extract.pdf",
+          "pages": 3
+        },
+        {
+          "doc_id": "coastal_dev_lp_agreement",
+          "label": "Coastal Development Partners LP Limited Partnership Agreement",
+          "doc_type": "limited_partnership_agreement",
+          "file": "coastal_dev_lp_agreement.pdf",
+          "pages": 3
+        },
+        {
+          "doc_id": "coastal_dev_management_articles",
+          "label": "Coastal Dev Management LLC Articles of Organization",
+          "doc_type": "articles_of_organization",
+          "file": "coastal_dev_management_articles.pdf",
+          "pages": 1
+        },
+        {
+          "doc_id": "mitchell_irrevocable_trust",
+          "label": "Mitchell Family Irrevocable Trust Agreement",
+          "doc_type": "trust_agreement",
+          "file": "mitchell_irrevocable_trust.pdf",
+          "pages": 2
+        }
+      ]
+    },
+    {
+      "scenario": "stress_d",
+      "label": "Stress Test D \u2014 Joint Revocable Trust + Cayman Entity",
+      "description": "UBO resolution with a joint revocable trust (two co-grantors, each with a 50% share) and a Cayman Islands entity. Both co-grantors resolve as UBOs. High-risk jurisdiction flag on Cayman entity. No adverse media.",
+      "dir": "scenario_d",
+      "documents": [
+        {
+          "doc_id": "riverside_commerce_articles",
+          "label": "Riverside Commerce Center LLC Articles of Organization",
+          "doc_type": "articles_of_organization",
+          "file": "riverside_commerce_articles.pdf",
+          "pages": 3
+        },
+        {
+          "doc_id": "henderson_real_estate_operating_agreement",
+          "label": "Henderson Real Estate Partners LLC Operating Agreement",
+          "doc_type": "operating_agreement",
+          "file": "henderson_real_estate_operating_agreement.pdf",
+          "pages": 3
+        },
+        {
+          "doc_id": "henderson_wu_joint_trust_agreement",
+          "label": "Henderson-Wu Joint Revocable Living Trust Agreement",
+          "doc_type": "trust_agreement",
+          "file": "henderson_wu_joint_trust_agreement.pdf",
+          "pages": 3
+        },
+        {
+          "doc_id": "wu_pacific_register",
+          "label": "Wu Pacific Investments Ltd Certificate of Incorporation",
+          "doc_type": "certificate_of_incorporation",
+          "file": "wu_pacific_register.pdf",
+          "pages": 3
+        }
+      ]
+    }
+  ]
+}

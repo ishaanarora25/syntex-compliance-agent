@@ -45,7 +45,7 @@ export function AuditStrip({ entries }: AuditStripProps) {
               <Badge variant={RISK_BADGE[entry.risk_level] ?? "secondary"} className="text-[10px] h-5">
                 {entry.event}
               </Badge>
-              <span className="text-xs text-foreground/80">{entry.fixture_label}</span>
+              <span className="text-xs text-foreground/80">{entry.case_label}</span>
               <span className="text-[10px] text-muted-foreground">by {entry.approved_by}</span>
               <span className="text-[10px] text-muted-foreground italic">— {entry.conclusion}</span>
               <div className="w-px h-3 bg-border" />

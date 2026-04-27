@@ -18,6 +18,7 @@ function ScrollArea({
       <ScrollAreaPrimitive.Viewport
         data-slot="scroll-area-viewport"
         className="ring-ring/10 size-full rounded-[inherit] outline-none transition-[color,box-shadow] focus-visible:ring-2 focus-visible:outline-none"
+        style={{ overflowX: "hidden" }}
       >
         {children}
       </ScrollAreaPrimitive.Viewport>

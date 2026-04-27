@@ -28,6 +28,7 @@ def _plural(n: int, word: str) -> str:
 def build_work_product(
     fixture: Fixture,
     resolved_ubos: List[ResolvedUBO],
+    risk_level_override: str | None = None,
 ) -> AgentWorkProduct:
     steps: List[AgentReasoningStep] = []
     step_num = 1
@@ -246,57 +247,96 @@ def build_work_product(
     step_num += 1
 
     # -----------------------------------------------------------------------
-    # OFAC / SDN Screening
+    # KYC/KYB Screening — OFAC / PEP / Adverse Media
     # -----------------------------------------------------------------------
-    screening_lines = []
-    ofac_flags = []
+    from app.services.ofac_service import screen as ofac_screen
+    from app.services.pep_service import screen as pep_screen
+    from app.services.adverse_media_service import screen as am_screen
+
+    ofac_lines: List[str] = []
+    pep_lines: List[str] = []
+    am_lines: List[str] = []
+    ofac_flags: List[str] = []
+    pep_flags: List[str] = []
+    am_flags: List[str] = []
+
     for ubo in resolved_ubos:
         r = ubo.ofac_result
         if r.status == "clear":
-            screening_lines.append(f"• {ubo.name}: CLEAR — No matches found in SDN or Consolidated List.")
+            ofac_lines.append(f"• {ubo.name}: CLEAR — No SDN/Consolidated List match.")
         elif r.status == "potential_match":
-            screening_lines.append(
-                f"• {ubo.name}: POTENTIAL MATCH — {r.sdn_name} ({r.program}, score {r.match_score:.0%}). "
-                f"{r.remarks}"
+            ofac_lines.append(
+                f"• {ubo.name}: POTENTIAL MATCH — {r.sdn_name} ({r.program}, "
+                f"score {r.match_score:.0%}). {r.remarks}"
             )
             ofac_flags.append(ubo.name)
         elif r.status == "confirmed_hit":
-            screening_lines.append(
-                f"• {ubo.name}: CONFIRMED HIT — {r.sdn_name} ({r.program}). TRANSACTION MUST BE BLOCKED."
+            ofac_lines.append(
+                f"• {ubo.name}: CONFIRMED HIT — {r.sdn_name} ({r.program}). "
+                f"TRANSACTION MUST BE BLOCKED."
             )
             ofac_flags.append(ubo.name)
 
-    # Also screen non-UBO individuals
+        p = ubo.pep_result
+        if p.status == "clear":
+            pep_lines.append(f"• {ubo.name}: CLEAR — Not on PEP or family/associate lists.")
+        else:
+            pep_lines.append(
+                f"• {ubo.name}: {p.status.upper()} — {p.role or 'See remarks'} "
+                f"({p.country or '—'}, {p.category or 'unclassified'}). {p.remarks or ''}"
+            )
+            pep_flags.append(ubo.name)
+
+        a = ubo.adverse_media_result
+        if a.status == "clear":
+            am_lines.append(f"• {ubo.name}: CLEAR — No adverse media hits across monitored sources.")
+        else:
+            headlines = "; ".join(
+                f"\"{art.get('headline','')}\" ({art.get('source','')}, {art.get('date','')})"
+                for art in a.articles[:2]
+            )
+            am_lines.append(
+                f"• {ubo.name}: {a.status.upper()} — severity={a.severity}. "
+                f"{headlines}. {a.remarks or ''}"
+            )
+            am_flags.append(ubo.name)
+
+    # Screen non-UBO individuals for completeness
     non_ubo_individuals = [
         e for e in fixture.entities
         if e.entity_type == "individual" and e.entity_id not in {u.entity_id for u in resolved_ubos}
     ]
     for ind in non_ubo_individuals:
-        from app.services.ofac_service import screen
-        r = screen(ind.entity_id, ind.label)
-        if r.status == "clear":
-            screening_lines.append(
-                f"• {ind.label} (non-UBO individual): CLEAR"
-            )
-        else:
-            screening_lines.append(
-                f"• {ind.label} (non-UBO individual): {r.status.upper()} — {r.sdn_name}"
-            )
+        r = ofac_screen(ind.entity_id, ind.label)
+        label = f"{ind.label} (non-UBO individual)"
+        ofac_lines.append(
+            f"• {label}: {r.status.upper()}" + (f" — {r.sdn_name}" if r.sdn_name else "")
+        )
+        p = pep_screen(ind.entity_id, ind.label)
+        pep_lines.append(
+            f"• {label}: {p.status.upper()}" + (f" — {p.role}" if p.role else "")
+        )
+        a = am_screen(ind.entity_id, ind.label, ind.adverse_media)
+        am_lines.append(f"• {label}: {a.status.upper()}")
 
     steps.append(AgentReasoningStep(
         step_number=step_num,
         category="ofac_screening",
-        title="OFAC / SDN Screening",
+        title="KYC/KYB Screening — OFAC, PEP, Adverse Media",
         detail=(
-            "[DEMO STUB — no real OFAC API calls made]\n\n"
-            f"Screened {_plural(len(resolved_ubos) + len(non_ubo_individuals), 'individual')} "
-            f"against OFAC SDN List and Consolidated Sanctions List:\n" +
-            "\n".join(screening_lines)
+            "[DEMO STUB — no real screening APIs called]\n\n"
+            "OFAC / SDN List:\n" + "\n".join(ofac_lines) + "\n\n"
+            "Politically Exposed Persons:\n" + "\n".join(pep_lines) + "\n\n"
+            "Adverse Media:\n" + "\n".join(am_lines)
         ),
         outcome=(
-            f"{len(ofac_flags)} potential/confirmed match(es) requiring human review: {', '.join(ofac_flags)}. "
-            if ofac_flags else
-            f"All {_plural(len(resolved_ubos) + len(non_ubo_individuals), 'individual')} cleared."
+            f"OFAC: {len(ofac_flags)} flag(s); PEP: {len(pep_flags)} flag(s); "
+            f"Adverse Media: {len(am_flags)} flag(s). "
+            + (
+                "All individuals cleared across all three lists."
+                if not (ofac_flags or pep_flags or am_flags)
+                else "Flagged individuals require analyst review."
+            )
         ),
     ))
     step_num += 1
@@ -349,7 +389,7 @@ def build_work_product(
         risk_lines.append("• No significant risk factors identified beyond standard review.")
 
     # Determine overall risk level
-    risk_level = fixture.answer_key.risk_level
+    risk_level = risk_level_override or fixture.answer_key.risk_level
 
     steps.append(AgentReasoningStep(
         step_number=step_num,

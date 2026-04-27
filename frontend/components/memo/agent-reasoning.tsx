@@ -65,8 +65,8 @@ function ReasoningStep({ step }: { step: AgentReasoningStep }) {
       >
         <Icon className={cn("size-3.5 shrink-0 mt-0.5", color)} />
         <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-xs font-semibold text-foreground leading-tight">
+          <div className="flex items-center justify-between gap-2 min-w-0">
+            <span className="text-xs font-semibold text-foreground leading-tight truncate">
               Step {step.step_number}: {step.title}
             </span>
             {expanded ? (
@@ -82,10 +82,10 @@ function ReasoningStep({ step }: { step: AgentReasoningStep }) {
       </button>
 
       {expanded && (
-        <div className="mt-2.5 ml-6 space-y-2">
-          <pre className="text-[11px] text-foreground/80 whitespace-pre-wrap font-sans leading-relaxed">
+        <div className="mt-2.5 ml-6 space-y-2 min-w-0 overflow-hidden">
+          <p className="text-[11px] text-foreground/80 whitespace-pre-wrap break-all leading-relaxed">
             {step.detail}
-          </pre>
+          </p>
           <div className="flex items-start gap-1.5 pt-1 border-t border-current/10">
             <CheckCircle2 className={cn("size-3 shrink-0 mt-0.5", color)} />
             <p className={cn("text-[11px] font-medium leading-tight", color)}>{step.outcome}</p>

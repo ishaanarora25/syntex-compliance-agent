@@ -147,6 +147,8 @@ def build(fixture: Fixture, resolved_ubos: List[ResolvedUBO]) -> Tuple[List[Grap
                 is_ubo=is_ubo,
                 risk_flags=list(entity.risk_flags) + (["adverse_media"] if entity.adverse_media else []),
                 ofac_status=ubo.ofac_result.status if ubo else None,
+                pep_status=ubo.pep_result.status if ubo else None,
+                adverse_media_status=ubo.adverse_media_result.status if ubo else None,
                 position={"x": _x_pos(entity_id), "y": _y_pos(entity_id)},
             )
         )
