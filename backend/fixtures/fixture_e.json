@@ -1,0 +1,82 @@
+{
+  "fixture_id": "fixture_e",
+  "label": "Scenario E — Foreign Founder of US LLC",
+  "scenario": "E",
+  "description": "Foreign-founder intake: Delaware LLC owned 100% by a Brazilian national. The RM has uploaded articles of organization only — the agent must surface the additional ID, tax, source-of-funds and CTA BOI documents an FI needs for a foreign individual UBO.",
+  "entities": [
+    {
+      "entity_id": "helio_renewables_llc",
+      "label": "Helio Renewables LLC",
+      "entity_type": "company",
+      "entity_subtype": "LLC",
+      "jurisdiction": "Delaware, USA",
+      "is_root": true,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "rafael_costa",
+      "label": "Rafael Antônio Costa",
+      "entity_type": "individual",
+      "entity_subtype": null,
+      "jurisdiction": "São Paulo, Brazil",
+      "nationality": "BR",
+      "is_root": false,
+      "has_control_rights": true,
+      "risk_flags": [
+        "foreign_national"
+      ],
+      "adverse_media": null
+    }
+  ],
+  "edges": [
+    {
+      "edge_id": "e1",
+      "source": "helio_renewables_llc",
+      "target": "rafael_costa",
+      "ownership_pct": 100.0,
+      "doc_id": "helio_renewables_articles",
+      "page": 2
+    }
+  ],
+  "documents": [
+    {
+      "doc_id": "helio_renewables_articles",
+      "label": "Helio Renewables LLC Articles of Organization",
+      "doc_type": "articles_of_organization",
+      "pages": [
+        {
+          "page": 1,
+          "text": "CERTIFICATE OF FORMATION\nHELIO RENEWABLES LLC\nState of Delaware\n\nThis Certificate of Formation is filed in accordance with Section 18-201 of the Delaware Limited Liability Company Act.\n\nFIRST: The name of the limited liability company is Helio Renewables LLC.\nSECOND: The address of its registered office in the State of Delaware is 1209 Orange Street, City of Wilmington, County of New Castle, Delaware 19801.\nTHIRD: The registered agent at such address is The Corporation Trust Company.\n\nDate of Formation: March 4, 2026\n\nSigned: Rafael Antônio Costa, Authorized Person and Sole Member"
+        },
+        {
+          "page": 2,
+          "text": "MEMBERSHIP AND OWNERSHIP\n\nThe Company is a single-member limited liability company. The sole member is Rafael Antônio Costa, a citizen and resident of the Federative Republic of Brazil, with a residential address at Rua Oscar Freire 1456, apt. 92, Jardins, São Paulo, SP 01426-001, Brazil.\n\nMr. Costa holds one hundred percent (100%) of the membership interests in Helio Renewables LLC as of the date of this filing and serves as the Managing Member. Mr. Costa does not currently hold a U.S. Social Security Number; an Individual Taxpayer Identification Number application is in progress.\n\nNo other persons or entities hold any membership interest in the Company."
+        },
+        {
+          "page": 3,
+          "text": "MANAGEMENT, PURPOSE, AND FUNDING\n\nPrincipal business activities: development, financing, and operation of utility-scale solar generation projects in the southwestern United States. The Company anticipates initial capitalization of approximately USD $4.5 million, to be funded by wire transfer from Mr. Costa's personal accounts at Banco Itaú (Brazil) and Banco Santander Brasil. Additional growth capital is expected from Brazilian institutional co-investors at a later stage.\n\nFiscal year end: December 31."
+        }
+      ]
+    }
+  ],
+  "answer_key": {
+    "resolved_ubos": [
+      {
+        "name": "Rafael Antônio Costa",
+        "nationality": "BR",
+        "ownership_pct": 100.0,
+        "path": [
+          "helio_renewables_llc",
+          "rafael_costa"
+        ],
+        "ubo_by_control": false
+      }
+    ],
+    "risk_level": "medium",
+    "memo_type": null,
+    "expected_escalation": false,
+    "expected_complexity_signals": []
+  }
+}

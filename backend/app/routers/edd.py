@@ -22,17 +22,15 @@ import uuid
 from datetime import datetime, timezone
 from typing import List
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, File, Form, HTTPException, Response, UploadFile
+from fastapi.responses import JSONResponse, StreamingResponse
 
 from app.exceptions import AnalysisError, EDDServiceError
 from app.models import (
     AnalyzeRequest,
     AnalyzeResponse,
-    ApproveRequest,
-    ApproveResponse,
-    AuditEntry,
-    AuditLogResponse,
+    AssessApplicationRequest,
+    AssessApplicationResponse,
     CaseDetail,
     CaseListResponse,
     CaseSummary,
@@ -44,9 +42,10 @@ from app.models import (
     UploadedDocumentMeta,
 )
 from app.services import (
+    agent_sdk_orchestrator,
+    application_assessor,
     case_analyzer,
     case_store,
-    cdd_requirements,
     claude_client,
     document_intelligence,
     fixtures,
@@ -58,9 +57,6 @@ from app.services import (
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api", tags=["bsa-copilot"])
-
-# In-memory audit log (demo only — lost on restart)
-_audit_log: List[AuditEntry] = []
 
 
 # ---------------------------------------------------------------------------
@@ -102,7 +98,9 @@ async def get_case(case_id: str) -> CaseDetail:
 async def get_case_analysis(case_id: str) -> JSONResponse:
     case = case_store.get_case_internal(case_id)
     if case.last_analysis is None:
-        return JSONResponse(status_code=204, content=None)
+        # 204 No Content — must have no body, otherwise Starlette/uvicorn raises
+        # "Response content longer than Content-Length".
+        return Response(status_code=204)
     return JSONResponse(content=case.last_analysis.model_dump())
 
 
@@ -192,6 +190,88 @@ async def analyze(request: AnalyzeRequest) -> AnalyzeResponse:
     return await _analyze_fixture(request.fixture_id, start_ms)
 
 
+@router.post("/edd/analyze-agent", response_model=AnalyzeResponse)
+async def analyze_agent(request: AnalyzeRequest) -> AnalyzeResponse:
+    """
+    Agent-driven analysis loop, powered by the Claude Agent SDK.
+
+    Same response shape as `/edd/analyze`, but the middle of the pipeline is
+    replaced by an SDK-driven tool-use loop. The SDK owns the message
+    threading, prompt-cache breakpoint placement, retries, and stop-condition
+    logic; we own the tool registry (in-process MCP server `syntex`),
+    deterministic post-processing (UBO math, trust look-through, citation
+    resolution, CDD checklist), and the verifier subagent.
+
+    Only `case_id` is supported here — fixtures still go through the legacy
+    `/edd/analyze` path so demo scenarios remain reproducible.
+
+    """
+    if not request.case_id:
+        raise HTTPException(
+            status_code=400,
+            detail="analyze-agent requires case_id (fixtures use /edd/analyze).",
+        )
+    try:
+        return await agent_sdk_orchestrator.run(request.case_id)
+    except AnalysisError:
+        raise
+    except Exception as exc:
+        logger.exception("Agent loop failed for case %s", request.case_id)
+        raise AnalysisError(f"Agent loop failed: {exc}") from exc
+
+
+@router.post("/edd/analyze-agent/stream")
+async def analyze_agent_stream(request: AnalyzeRequest):
+    """
+    Server-Sent Events stream of agent loop activity.
+
+    Events arrive as `data: <json>\\n\\n`. Each event has a `type`:
+      - started, iteration, tool_use, tool_result, assistant_text
+      - post_processing, verifier_start, verifier_revision, verifier_done
+      - final  — payload `response` is the full AnalyzeResponse
+      - error  — payload `message` is the failure reason
+
+    The frontend uses this to render live tool-call activity and avoid the
+    60–90s blank wait that hits the Next.js proxy idle-timeout.
+    """
+    if not request.case_id:
+        raise HTTPException(
+            status_code=400,
+            detail="analyze-agent/stream requires case_id.",
+        )
+
+    case_id = request.case_id
+
+    async def event_generator():
+        import json
+
+        def _serialize(event: dict) -> str:
+            payload = dict(event)
+            response = payload.get("response")
+            if response is not None and hasattr(response, "model_dump"):
+                payload["response"] = response.model_dump()
+            return f"data: {json.dumps(payload, default=str)}\n\n"
+
+        try:
+            async for event in agent_sdk_orchestrator.run_stream(case_id):
+                yield _serialize(event)
+        except AnalysisError as exc:
+            yield _serialize({"type": "error", "message": str(exc)})
+        except Exception as exc:
+            logger.exception("Agent stream failed for case %s", case_id)
+            yield _serialize({"type": "error", "message": f"Agent loop failed: {exc}"})
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache, no-transform",
+            "X-Accel-Buffering": "no",  # disable nginx-style buffering
+            "Connection": "keep-alive",
+        },
+    )
+
+
 async def _analyze_fixture(fixture_id: str, start_ms: float) -> AnalyzeResponse:
     fixture: Fixture = fixtures.get_fixture(fixture_id)
     logger.info("Starting fixture analysis %s", fixture.fixture_id)
@@ -201,37 +281,11 @@ async def _analyze_fixture(fixture_id: str, start_ms: float) -> AnalyzeResponse:
         graph_nodes, graph_edges = graph_builder.build(fixture, resolved_ubos)
         work_product = reasoning_writer.build_work_product(fixture, resolved_ubos)
 
-        memo_type = fixture.answer_key.memo_type
-        if memo_type == "full_edd":
-            memo_sections = await claude_client.draft_full_edd_memo(fixture, resolved_ubos)
-        else:
-            memo_sections = await claude_client.draft_ubo_resolution_memo(fixture, resolved_ubos)
-
-        # Build a synthetic "uploaded documents" list from the fixture so the
-        # CDD checklist can evaluate which required docs are present.
-        uploaded = [
-            UploadedDocumentMeta(
-                doc_id=d.doc_id,
-                filename=f"{d.doc_id}.pdf",
-                size_bytes=0,
-                page_count=len(d.pages),
-                doc_type=d.doc_type,
-                doc_type_confidence=1.0,
-                classifier_source="fixture",
-                label=d.label,
-                uploaded_at=datetime.now(timezone.utc).isoformat(),
-            )
-            for d in fixture.documents
-        ]
-        checklist = cdd_requirements.build_checklist(
-            entities=[
-                _fixture_entity_to_ref(e) for e in fixture.entities
-            ],
-            edges=[
-                _fixture_edge_to_ref(e) for e in fixture.edges
-            ],
-            documents=uploaded,
+        justification_sections, checklist = await claude_client.draft_justification(
+            fixture=fixture,
             resolved_ubos=resolved_ubos,
+            requested_docs=[],
+            escalation=None,
         )
     except Exception as exc:
         logger.exception("Fixture analysis failed %s", fixture.fixture_id)
@@ -248,11 +302,11 @@ async def _analyze_fixture(fixture_id: str, start_ms: float) -> AnalyzeResponse:
         resolved_ubos=resolved_ubos,
         graph_nodes=graph_nodes,
         graph_edges=graph_edges,
-        memo_type=memo_type,
-        memo_sections=memo_sections,
+        justification_sections=justification_sections,
         risk_level=fixture.answer_key.risk_level,
         agent_work_product=work_product,
         cdd_checklist=checklist,
+        escalation=None,
         processing_ms=processing_ms,
     )
 
@@ -288,32 +342,22 @@ async def _analyze_case(case_id: str, start_ms: float) -> AnalyzeResponse:
     try:
         resolved_ubos = ubo_resolver.resolve(synthetic_fixture)
 
-        risk_level, memo_type = case_analyzer.infer_risk_and_memo_type(
+        risk_level, _ = case_analyzer.infer_risk_and_memo_type(
             resolved_ubos, synthetic_fixture.entities
         )
-        # Rewrite answer_key so downstream consumers stay consistent.
         synthetic_fixture.answer_key.risk_level = risk_level
-        synthetic_fixture.answer_key.memo_type = memo_type
 
         graph_nodes, graph_edges = graph_builder.build(synthetic_fixture, resolved_ubos)
         work_product = reasoning_writer.build_work_product(
             synthetic_fixture, resolved_ubos, risk_level_override=risk_level
         )
 
-        if memo_type == "full_edd":
-            memo_sections = await claude_client.draft_full_edd_memo(
-                synthetic_fixture, resolved_ubos
-            )
-        else:
-            memo_sections = await claude_client.draft_ubo_resolution_memo(
-                synthetic_fixture, resolved_ubos
-            )
-
-        checklist = cdd_requirements.build_checklist(
-            entities=case.extracted_entities,
-            edges=case.extracted_edges,
-            documents=case.documents,
+        scratchpad = case_store.get_scratchpad(case_id)
+        justification_sections, checklist = await claude_client.draft_justification(
+            fixture=synthetic_fixture,
             resolved_ubos=resolved_ubos,
+            requested_docs=scratchpad.requested_documents,
+            escalation=scratchpad.escalation,
         )
     except Exception as exc:
         logger.exception("Case analysis failed %s", case_id)
@@ -330,11 +374,11 @@ async def _analyze_case(case_id: str, start_ms: float) -> AnalyzeResponse:
         resolved_ubos=resolved_ubos,
         graph_nodes=graph_nodes,
         graph_edges=graph_edges,
-        memo_type=memo_type,
-        memo_sections=memo_sections,
+        justification_sections=justification_sections,
         risk_level=risk_level,
         agent_work_product=work_product,
         cdd_checklist=checklist,
+        escalation=scratchpad.escalation,
         processing_ms=processing_ms,
     )
     case_store.store_analysis(case_id, response)
@@ -376,46 +420,24 @@ def _fixture_edge_to_ref(edge):
 
 
 # ---------------------------------------------------------------------------
-# Approve + audit
+# Application assessment — called by the onboarding-manager webhook receiver
 # ---------------------------------------------------------------------------
 
-@router.post("/edd/approve", response_model=ApproveResponse)
-async def approve(request: ApproveRequest) -> ApproveResponse:
-    if request.fixture_id:
-        fixture = fixtures.get_fixture(request.fixture_id)
-        risk = fixture.answer_key.risk_level
-        case_label = fixture.label
-    elif request.case_id:
-        case = case_store.get_case_internal(request.case_id)
-        risk = case.last_analysis.risk_level if case.last_analysis else "unknown"
-        case_label = case.applicant_name or case.name
-    else:
-        raise HTTPException(
-            status_code=400, detail="Provide either fixture_id or case_id."
-        )
+@router.post("/edd/assess-application", response_model=AssessApplicationResponse)
+async def assess_application(request: AssessApplicationRequest) -> AssessApplicationResponse:
+    """
+    Run the full pre-banker compliance pass on a freshly submitted application.
 
-    entry = AuditEntry(
-        entry_id=str(uuid.uuid4()),
-        timestamp=datetime.now(timezone.utc).isoformat(),
-        event="DRAFT_APPROVED",
-        case_id=request.case_id,
-        fixture_id=request.fixture_id,
-        case_label=case_label,
-        approved_by=request.approved_by,
-        risk_level=risk,
-        conclusion=request.conclusion,
-    )
-    _audit_log.append(entry)
-    logger.info(
-        "Audit: %s approved %s (risk=%s conclusion=%s)",
-        request.approved_by,
-        request.fixture_id or request.case_id,
-        risk,
-        request.conclusion,
-    )
-    return ApproveResponse(entry=entry)
+    Performs name-consistency check (against uploaded formation docs), KYB/KYC
+    stub screenings, OFAC + PEP + adverse-media screening, business-risk
+    classification, UBO completeness audit, and synthesis of recommended
+    follow-up documents and applicant questions.
+    """
+    try:
+        assessment = await application_assessor.assess(request)
+    except Exception as exc:
+        logger.exception("Application assessment failed for %s", request.applicationId)
+        raise AnalysisError(f"Assessment failed: {exc}") from exc
+    return AssessApplicationResponse(assessment=assessment)
 
 
-@router.get("/edd/audit", response_model=AuditLogResponse)
-async def get_audit_log() -> AuditLogResponse:
-    return AuditLogResponse(entries=list(reversed(_audit_log)))

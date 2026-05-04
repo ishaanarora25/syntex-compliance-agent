@@ -150,6 +150,72 @@
           "pages": 3
         }
       ]
+    },
+    {
+      "scenario": "E",
+      "label": "Scenario E \u2014 Foreign Founder of US LLC",
+      "description": "Foreign-founder intake: Delaware LLC owned 100% by a Brazilian national. The RM has uploaded articles of organization only \u2014 the agent must surface the additional ID, tax, source-of-funds and CTA BOI documents an FI needs for a foreign individual UBO.",
+      "dir": "scenario_e",
+      "documents": [
+        {
+          "doc_id": "helio_renewables_articles",
+          "label": "Helio Renewables LLC Articles of Organization",
+          "doc_type": "articles_of_organization",
+          "file": "helio_renewables_articles.pdf",
+          "pages": 3
+        }
+      ]
+    },
+    {
+      "scenario": "F",
+      "label": "Scenario F \u2014 Foreign-Domiciled Parent Opening US Operations",
+      "description": "Foreign-parent intake: a UK private limited company has formed a Delaware C-corp subsidiary. The agent must surface apostille, certified-translation, W-8BEN-E, Companies House filing-history, nominee-director attestation, and CTA foreign-reporting-company BOI documents.",
+      "dir": "scenario_f",
+      "documents": [
+        {
+          "doc_id": "albion_us_certificate_of_incorporation",
+          "label": "Albion US Inc Certificate of Incorporation",
+          "doc_type": "certificate_of_incorporation",
+          "file": "albion_us_certificate_of_incorporation.pdf",
+          "pages": 2
+        },
+        {
+          "doc_id": "albion_uk_companies_house_extract",
+          "label": "Albion Holdings Ltd Companies House Confirmation Statement (Excerpt)",
+          "doc_type": "commercial_register_extract",
+          "file": "albion_uk_companies_house_extract.pdf",
+          "pages": 3
+        }
+      ]
+    },
+    {
+      "scenario": "G",
+      "label": "Scenario G \u2014 Multi-Tier Global Enterprise (Escalation)",
+      "description": "Multi-tier global structure that requires human compliance review. Root: Delaware LLC. Parent: Cayman holding company. Above that, a Singapore Pte Ltd held in part through a nominee, a BVI holding company, and an irrevocable Swiss trust with foreign-national beneficiaries. Three jurisdictions, nominee arrangement, offshore intermediary, and an irrevocable trust + foreign nationals \u2014 the agent should call recommend_escalation.",
+      "dir": "scenario_g",
+      "documents": [
+        {
+          "doc_id": "meridian_us_articles",
+          "label": "Meridian US Holdings LLC Articles of Organization",
+          "doc_type": "articles_of_organization",
+          "file": "meridian_us_articles.pdf",
+          "pages": 2
+        },
+        {
+          "doc_id": "meridian_org_chart",
+          "label": "Meridian Global Group \u2014 Summary Org Chart (Partial)",
+          "doc_type": "other",
+          "file": "meridian_org_chart.pdf",
+          "pages": 2
+        },
+        {
+          "doc_id": "apex_pacific_singapore_extract",
+          "label": "Apex Pacific Pte Ltd \u2014 ACRA BizFile Extract (Excerpt)",
+          "doc_type": "commercial_register_extract",
+          "file": "apex_pacific_singapore_extract.pdf",
+          "pages": 2
+        }
+      ]
     }
   ]
 }

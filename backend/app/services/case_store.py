@@ -18,11 +18,14 @@ from typing import Dict, List, Optional
 
 from app.exceptions import EDDServiceError
 from app.models import (
+    AgentScratchpad,
     AnalyzeResponse,
     CaseDetail,
     CaseSummary,
+    EscalationRecommendation,
     ExtractedEdge,
     ExtractedEntityRef,
+    RequestedDoc,
     UploadedDocumentMeta,
 )
 from app.services.pdf_extractor import ExtractedPDF
@@ -53,6 +56,7 @@ class _Case:
     applicant_name: str = ""
     last_analysis: Optional[AnalyzeResponse] = None
     last_analysis_at: Optional[str] = None
+    scratchpad: AgentScratchpad = field(default_factory=AgentScratchpad)
 
 
 _store: Dict[str, _Case] = {}
@@ -176,3 +180,58 @@ def get_case_internal(case_id: str) -> _Case:
 def delete_case(case_id: str) -> None:
     with _lock:
         _store.pop(case_id, None)
+
+
+# ---------------------------------------------------------------------------
+# Agent scratchpad operations
+# ---------------------------------------------------------------------------
+
+def get_scratchpad(case_id: str) -> AgentScratchpad:
+    with _lock:
+        case = _store.get(case_id)
+        if case is None:
+            raise CaseNotFoundError(case_id)
+        return case.scratchpad.model_copy(deep=True)
+
+
+def update_scratchpad(case_id: str, scratchpad: AgentScratchpad) -> None:
+    with _lock:
+        case = _store.get(case_id)
+        if case is None:
+            raise CaseNotFoundError(case_id)
+        case.scratchpad = scratchpad
+        case.updated_at = _now()
+
+
+def append_note(case_id: str, note: str) -> None:
+    with _lock:
+        case = _store.get(case_id)
+        if case is None:
+            raise CaseNotFoundError(case_id)
+        case.scratchpad.notes.append(note)
+        case.updated_at = _now()
+
+
+def set_escalation(case_id: str, escalation: EscalationRecommendation) -> None:
+    with _lock:
+        case = _store.get(case_id)
+        if case is None:
+            raise CaseNotFoundError(case_id)
+        case.scratchpad.escalation = escalation
+        case.updated_at = _now()
+
+
+def add_requested_document(case_id: str, doc: RequestedDoc) -> None:
+    with _lock:
+        case = _store.get(case_id)
+        if case is None:
+            raise CaseNotFoundError(case_id)
+        # Deduplicate on (label, applies_to_entity_id)
+        for existing in case.scratchpad.requested_documents:
+            if (
+                existing.label == doc.label
+                and existing.applies_to_entity_id == doc.applies_to_entity_id
+            ):
+                return
+        case.scratchpad.requested_documents.append(doc)
+        case.updated_at = _now()

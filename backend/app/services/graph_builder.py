@@ -180,13 +180,18 @@ def build(fixture: Fixture, resolved_ubos: List[ResolvedUBO]) -> Tuple[List[Grap
     for entity in fixture.entities:
         if entity.entity_type != "trust":
             continue
-        look_through_targets: List[str] = []
+        look_through_targets: List[tuple[str, str]] = []
         if entity.grantor_ids:
-            look_through_targets.extend(entity.grantor_ids)
+            look_through_targets.extend(("grantor", g) for g in entity.grantor_ids)
         if entity.beneficiary_ids:
-            look_through_targets.extend(entity.beneficiary_ids)
+            look_through_targets.extend(("beneficiary", b) for b in entity.beneficiary_ids)
 
-        for idx, target_id in enumerate(look_through_targets):
+        seen: set[tuple[str, str]] = set()
+        for role, target_id in look_through_targets:
+            key = (role, target_id)
+            if key in seen:
+                continue
+            seen.add(key)
             target = entities_by_id.get(target_id)
             if target is None:
                 continue
@@ -198,7 +203,7 @@ def build(fixture: Fixture, resolved_ubos: List[ResolvedUBO]) -> Tuple[List[Grap
 
             edges.append(
                 GraphEdge(
-                    id=f"look_{entity.entity_id}_{target_id}",
+                    id=f"look_{entity.entity_id}_{role}_{target_id}",
                     source=entity.entity_id,
                     target=target_id,
                     ownership_pct=pct,

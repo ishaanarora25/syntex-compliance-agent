@@ -1,16 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Plus,
   FolderOpen,
-  FlaskConical,
-  Loader2,
-  ChevronDown,
+  Settings,
+  X,
+  Bot,
   ChevronRight,
+  GitMerge,
+  ShieldCheck,
+  Building2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import type { CaseSummary, FixtureMeta } from "@/types/edd";
 
@@ -20,6 +24,8 @@ interface CaseSidebarProps {
   activeCaseId: string | null;
   activeFixtureId: string | null;
   isBusy: boolean;
+  useAgentLoop: boolean;
+  onToggleAgentLoop: (next: boolean) => void;
   onCreateCase: (name: string) => Promise<void>;
   onSelectCase: (caseId: string) => void;
   onSelectFixture: (fixtureId: string) => void;
@@ -41,19 +47,57 @@ const STATUS_VARIANT: Record<CaseSummary["status"], "secondary" | "warning" | "s
   approved: "success",
 };
 
+function NavRow({
+  icon: Icon,
+  label,
+  description,
+}: {
+  icon: React.ElementType;
+  label: string;
+  description: string;
+}) {
+  return (
+    <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted/60 transition-colors text-left group">
+      <div className="flex size-7 items-center justify-center rounded-md bg-muted border border-border shrink-0">
+        <Icon className="size-3.5 text-muted-foreground" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="text-xs font-medium text-foreground leading-tight">{label}</div>
+        <div className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{description}</div>
+      </div>
+      <ChevronRight className="size-3.5 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors shrink-0" />
+    </button>
+  );
+}
+
 export function CaseSidebar({
   cases,
   fixtures,
   activeCaseId,
   activeFixtureId,
   isBusy,
+  useAgentLoop,
+  onToggleAgentLoop,
   onCreateCase,
   onSelectCase,
   onSelectFixture,
 }: CaseSidebarProps) {
   const [creating, setCreating] = useState(false);
   const [newName, setNewName] = useState("");
-  const [showFixtures, setShowFixtures] = useState(true);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  const settingsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!settingsOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) {
+        setSettingsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [settingsOpen]);
 
   const submitNew = async () => {
     const name = newName.trim() || "Untitled applicant";
@@ -147,50 +191,86 @@ export function CaseSidebar({
             </div>
           </button>
         ))}
-
-        <div className="px-3 pt-3 pb-1">
-          <button
-            className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground"
-            onClick={() => setShowFixtures((v) => !v)}
-          >
-            {showFixtures ? (
-              <ChevronDown className="size-3" />
-            ) : (
-              <ChevronRight className="size-3" />
-            )}
-            <FlaskConical className="size-3" />
-            Demo Scenarios
-          </button>
-        </div>
-
-        {showFixtures &&
-          fixtures.map((f) => (
-            <button
-              key={f.fixture_id}
-              onClick={() => onSelectFixture(f.fixture_id)}
-              className={cn(
-                "w-full flex items-start gap-2 px-3 py-1.5 text-left hover:bg-muted/50 transition-colors",
-                activeFixtureId === f.fixture_id && "bg-primary/5 border-l-2 border-l-primary"
-              )}
-              disabled={isBusy}
-            >
-              <FlaskConical className="size-3.5 text-muted-foreground mt-0.5 shrink-0" />
-              <div className="min-w-0">
-                <div className="text-xs font-medium truncate">{f.label}</div>
-                <div className="text-[10px] text-muted-foreground truncate">
-                  {f.scenario}
-                </div>
-              </div>
-            </button>
-          ))}
       </div>
 
-      {isBusy && (
-        <div className="border-t border-border px-3 py-2 flex items-center gap-2 text-xs text-muted-foreground">
-          <Loader2 className="size-3 animate-spin" />
-          Working…
-        </div>
-      )}
+      {/* Settings trigger */}
+      <div className="relative border-t border-border" ref={settingsRef}>
+        {settingsOpen && (
+          <div className="absolute bottom-full left-0 right-0 mb-1 mx-2 bg-card border border-border rounded-xl shadow-lg z-50 overflow-hidden">
+            <div className="flex items-center justify-between px-3 py-2.5 border-b border-border">
+              <span className="text-xs font-semibold text-foreground">Settings</span>
+              <button
+                onClick={() => setSettingsOpen(false)}
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <X className="size-3.5" />
+              </button>
+            </div>
+
+            <div className="px-2 py-2 flex flex-col gap-0.5">
+              {/* Analysis engine — only section with an inline control */}
+              <div className="px-3 py-2 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Bot className="size-3.5 text-muted-foreground" />
+                  <div>
+                    <div className="text-xs font-medium text-foreground leading-tight">Analysis engine</div>
+                    <div className="text-[10px] text-muted-foreground mt-0.5">
+                      {useAgentLoop ? "Opus 4.7 + tools" : "Legacy pipeline"}
+                    </div>
+                  </div>
+                </div>
+                <button
+                  role="switch"
+                  aria-checked={useAgentLoop}
+                  disabled={isBusy}
+                  onClick={() => onToggleAgentLoop(!useAgentLoop)}
+                  className={cn(
+                    "relative inline-flex h-4 w-7 shrink-0 items-center rounded-full transition-colors",
+                    useAgentLoop ? "bg-primary" : "bg-muted",
+                    isBusy && "opacity-50 cursor-not-allowed"
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "inline-block size-3 transform rounded-full bg-background shadow transition-transform",
+                      useAgentLoop ? "translate-x-3.5" : "translate-x-0.5"
+                    )}
+                  />
+                </button>
+              </div>
+
+              <Separator className="my-1" />
+
+              <NavRow
+                icon={GitMerge}
+                label="Workflow"
+                description="Approval chains, escalation, SLAs"
+              />
+              <NavRow
+                icon={ShieldCheck}
+                label="Compliance rules"
+                description="Thresholds, screening, jurisdictions"
+              />
+              <NavRow
+                icon={Building2}
+                label="Organization"
+                description="Team, branding, integrations"
+              />
+            </div>
+          </div>
+        )}
+
+        <button
+          onClick={() => setSettingsOpen((v) => !v)}
+          className={cn(
+            "w-full flex items-center gap-2 px-3 py-2.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors",
+            settingsOpen && "bg-muted/40 text-foreground"
+          )}
+        >
+          <Settings className="size-3.5 shrink-0" />
+          <span className="font-medium">Settings</span>
+        </button>
+      </div>
     </aside>
   );
 }

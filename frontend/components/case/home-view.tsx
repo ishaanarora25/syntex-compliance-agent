@@ -98,7 +98,7 @@ export function HomeView({
                 ? `Demo scenario · ${selectedFixture.scenario} — ${selectedFixture.description}`
                 : selectedCase
                 ? `${caseDocs.length} document${caseDocs.length !== 1 ? "s" : ""} uploaded · drop more below to add`
-                : "Syntex resolves beneficial ownership, screens OFAC / PEP / adverse media, and drafts your EDD memo."}
+                : "Syntex builds your CDD checklist — flagging the documents the BSA team still needs to identify UBOs."}
             </p>
           </div>
 

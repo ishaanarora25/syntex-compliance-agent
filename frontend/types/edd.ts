@@ -90,11 +90,22 @@ export interface ResolvedUBO {
   ubo_by_control: boolean;
 }
 
-export interface MemoSection {
+export interface JustificationSection {
   section_id: string;
   title: string;
   content: string;
   citations: Citation[];
+}
+
+// Backwards-compatible alias.
+export type MemoSection = JustificationSection;
+
+export interface EscalationRecommendation {
+  escalated: boolean;
+  reasons: string[];
+  complexity_signals: string[];
+  recommended_team?: string | null;
+  recorded_at: string;
 }
 
 export interface AgentReasoningStep {
@@ -207,24 +218,54 @@ export interface AnalyzeResponse {
   resolved_ubos: ResolvedUBO[];
   graph_nodes: GraphNode[];
   graph_edges: GraphEdge[];
-  memo_type: "ubo_resolution" | "full_edd";
-  memo_sections: MemoSection[];
+  justification_sections: JustificationSection[];
   risk_level: "low" | "medium" | "high" | "pending";
   agent_work_product: AgentWorkProduct;
   cdd_checklist: CDDChecklist;
+  escalation?: EscalationRecommendation | null;
   processing_ms: number;
+  agent_trace?: AgentTrace | null;
+  verifier_report?: VerifierReport | null;
+  fincen_citations?: Citation[];
 }
 
-export interface AuditEntry {
-  entry_id: string;
-  timestamp: string;
-  event: string;
-  case_id?: string;
-  fixture_id?: string;
-  case_label: string;
-  approved_by: string;
-  risk_level: string;
-  conclusion: string;
+export interface RequestedDoc {
+  requirement_id: string;
+  label: string;
+  rationale: string;
+  applies_to_entity_id?: string | null;
+  requested_at: string;
+}
+
+export interface AgentToolCall {
+  iteration: number;
+  tool_use_id: string;
+  name: string;
+  input: Record<string, unknown>;
+  output_summary: string;
+  is_error: boolean;
+  duration_ms: number;
+}
+
+export interface AgentTrace {
+  iterations: number;
+  tool_calls: AgentToolCall[];
+  stop_reason: string;
+  revision_rounds: number;
+}
+
+export interface VerifierFinding {
+  section_id?: string | null;
+  issue: string;
+  severity: "low" | "medium" | "high";
+}
+
+export interface VerifierReport {
+  needs_revision: boolean;
+  claims_unsupported: VerifierFinding[];
+  risks_unaddressed: VerifierFinding[];
+  citations_missing: VerifierFinding[];
+  summary: string;
 }
 
 export interface FixtureMeta {

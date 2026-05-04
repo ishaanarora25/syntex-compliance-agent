@@ -1,0 +1,281 @@
+{
+  "fixture_id": "fixture_g",
+  "label": "Scenario G — Multi-Tier Global Enterprise (Escalation)",
+  "scenario": "G",
+  "description": "Multi-tier global structure that requires human compliance review. Root: Delaware LLC. Parent: Cayman holding company. Above that, a Singapore Pte Ltd held in part through a nominee, a BVI holding company, and an irrevocable Swiss trust with foreign-national beneficiaries. Three jurisdictions, nominee arrangement, offshore intermediary, and an irrevocable trust + foreign nationals — the agent should call recommend_escalation.",
+  "entities": [
+    {
+      "entity_id": "meridian_us_holdings_llc",
+      "label": "Meridian US Holdings LLC",
+      "entity_type": "company",
+      "entity_subtype": "LLC",
+      "jurisdiction": "Delaware, USA",
+      "is_root": true,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "meridian_global_industries_ltd",
+      "label": "Meridian Global Industries Ltd",
+      "entity_type": "company",
+      "entity_subtype": "exempt_company",
+      "jurisdiction": "Cayman Islands",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [
+        "foreign_entity",
+        "high_risk_jurisdiction"
+      ],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "apex_pacific_pte",
+      "label": "Apex Pacific Pte Ltd",
+      "entity_type": "company",
+      "entity_subtype": "private_limited",
+      "jurisdiction": "Singapore",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [
+        "foreign_entity"
+      ],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "helvetia_family_trust",
+      "label": "Helvetia Family Trust (irrevocable)",
+      "entity_type": "trust",
+      "entity_subtype": "irrevocable_trust",
+      "jurisdiction": "Geneva, Switzerland",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [
+        "foreign_entity"
+      ],
+      "adverse_media": null,
+      "grantor_ids": [
+        "dieter_muller"
+      ],
+      "grantor_pcts": {
+        "dieter_muller": 1.0
+      },
+      "beneficiary_ids": [
+        "dieter_muller",
+        "anna_muller"
+      ],
+      "beneficiary_pcts": {
+        "dieter_muller": 0.5,
+        "anna_muller": 0.5
+      },
+      "discretionary": false
+    },
+    {
+      "entity_id": "hartwell_family_holdings_bvi",
+      "label": "Hartwell Family Holdings (BVI) Ltd",
+      "entity_type": "company",
+      "entity_subtype": "BC",
+      "jurisdiction": "British Virgin Islands",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [
+        "foreign_entity",
+        "high_risk_jurisdiction"
+      ],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "lim_wei_jian",
+      "label": "Lim Wei Jian (held through Crescent Nominees Pte Ltd)",
+      "entity_type": "individual",
+      "entity_subtype": null,
+      "jurisdiction": "Singapore",
+      "nationality": "SG",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [
+        "foreign_national",
+        "nominee_arrangement"
+      ],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "oliver_hartwell_bvi",
+      "label": "Oliver James Hartwell",
+      "entity_type": "individual",
+      "entity_subtype": null,
+      "jurisdiction": "London, United Kingdom",
+      "nationality": "GB",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [
+        "foreign_national"
+      ],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "dieter_muller",
+      "label": "Dieter Friedrich Müller",
+      "entity_type": "individual",
+      "entity_subtype": null,
+      "jurisdiction": "Zurich, Switzerland",
+      "nationality": "CH",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [
+        "foreign_national"
+      ],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "anna_muller",
+      "label": "Anna Sophie Müller",
+      "entity_type": "individual",
+      "entity_subtype": null,
+      "jurisdiction": "Zurich, Switzerland",
+      "nationality": "CH",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [
+        "foreign_national"
+      ],
+      "adverse_media": null
+    }
+  ],
+  "edges": [
+    {
+      "edge_id": "g1",
+      "source": "meridian_us_holdings_llc",
+      "target": "meridian_global_industries_ltd",
+      "ownership_pct": 100.0,
+      "doc_id": "meridian_us_articles",
+      "page": 2
+    },
+    {
+      "edge_id": "g2",
+      "source": "meridian_global_industries_ltd",
+      "target": "apex_pacific_pte",
+      "ownership_pct": 60.0,
+      "doc_id": "meridian_org_chart",
+      "page": 1
+    },
+    {
+      "edge_id": "g3",
+      "source": "meridian_global_industries_ltd",
+      "target": "helvetia_family_trust",
+      "ownership_pct": 40.0,
+      "doc_id": "meridian_org_chart",
+      "page": 1
+    },
+    {
+      "edge_id": "g4",
+      "source": "apex_pacific_pte",
+      "target": "lim_wei_jian",
+      "ownership_pct": 50.0,
+      "doc_id": "apex_pacific_singapore_extract",
+      "page": 2
+    },
+    {
+      "edge_id": "g5",
+      "source": "apex_pacific_pte",
+      "target": "hartwell_family_holdings_bvi",
+      "ownership_pct": 50.0,
+      "doc_id": "apex_pacific_singapore_extract",
+      "page": 2
+    },
+    {
+      "edge_id": "g6",
+      "source": "hartwell_family_holdings_bvi",
+      "target": "oliver_hartwell_bvi",
+      "ownership_pct": 100.0,
+      "doc_id": "meridian_org_chart",
+      "page": 2
+    }
+  ],
+  "documents": [
+    {
+      "doc_id": "meridian_us_articles",
+      "label": "Meridian US Holdings LLC Articles of Organization",
+      "doc_type": "articles_of_organization",
+      "pages": [
+        {
+          "page": 1,
+          "text": "CERTIFICATE OF FORMATION\nMERIDIAN US HOLDINGS LLC\nState of Delaware\n\nFIRST: The name of the limited liability company is Meridian US Holdings LLC.\nSECOND: The registered office is 1209 Orange Street, Wilmington, Delaware 19801, and the registered agent is The Corporation Trust Company.\nDate of Formation: January 22, 2026.\nPurpose: holding company for U.S. acquisitions in industrial automation and logistics infrastructure on behalf of the Meridian Global group."
+        },
+        {
+          "page": 2,
+          "text": "MEMBERSHIP\n\nThe sole member of Meridian US Holdings LLC is Meridian Global Industries Ltd, an exempted company incorporated under the laws of the Cayman Islands (company number CR-388214), with its registered office at PO Box 309, Ugland House, Grand Cayman, KY1-1104, Cayman Islands.\n\nMeridian Global Industries Ltd holds one hundred percent (100%) of the membership interests in Meridian US Holdings LLC. The full ownership chart above the Cayman parent is summarized in the accompanying Group Org Chart but is not exhaustive — additional intermediate entities and a Swiss trust structure exist."
+        }
+      ]
+    },
+    {
+      "doc_id": "meridian_org_chart",
+      "label": "Meridian Global Group — Summary Org Chart (Partial)",
+      "doc_type": "other",
+      "pages": [
+        {
+          "page": 1,
+          "text": "MERIDIAN GLOBAL GROUP — SUMMARY OWNERSHIP CHART (PARTIAL)\nPrepared by: Allen & Overy (London) — internal client use only\nAs of: 28 February 2026\n\nTier 1 (US):  Meridian US Holdings LLC (Delaware) — 100% owned by:\nTier 2 (Offshore): Meridian Global Industries Ltd (Cayman exempted company)\n                    └ owned by:\n                       (a) Apex Pacific Pte Ltd (Singapore) — 60%\n                       (b) Helvetia Family Trust (Switzerland, irrevocable) — 40%\n\nNOTE: This chart shows only the most material ownership lines. Additional intermediate vehicles exist in Luxembourg and Jersey holding minority interests in operating subsidiaries; those subsidiaries are out of scope for the U.S. account-opening file.\nNOTE: Apex Pacific Pte Ltd's register lists Crescent Nominees Pte Ltd as the shareholder of record for 50% of the issued shares. Crescent Nominees holds those shares for the benefit of Mr Lim Wei Jian under a declaration of trust dated 12 June 2021. The original declaration is held by Allen & Overy Singapore."
+        },
+        {
+          "page": 2,
+          "text": "BVI INTERMEDIATE\n\nThe remaining 50% of Apex Pacific Pte Ltd is held directly by Hartwell Family Holdings (BVI) Ltd (BVI Business Companies Act, registration number 1882104), which is in turn 100% owned by Mr Oliver James Hartwell (UK national, resident in London).\n\nTRUST DETAIL\n\nHelvetia Family Trust is an irrevocable family trust established under Swiss law on 8 March 2018. Trustee: Banque Privée Geneve AG. Settlor: Mr Dieter Friedrich Müller. Named beneficiaries with fixed economic interests: Mr Dieter Friedrich Müller (50%) and Ms Anna Sophie Müller (50%). Both beneficiaries are Swiss nationals. The trust deed is held by Banque Privée Geneve AG; only an executive summary has been provided to the U.S. counterparty to date."
+        }
+      ]
+    },
+    {
+      "doc_id": "apex_pacific_singapore_extract",
+      "label": "Apex Pacific Pte Ltd — ACRA BizFile Extract (Excerpt)",
+      "doc_type": "commercial_register_extract",
+      "pages": [
+        {
+          "page": 1,
+          "text": "ACCOUNTING AND CORPORATE REGULATORY AUTHORITY (ACRA), SINGAPORE\nBIZFILE BUSINESS PROFILE — EXTRACT\n\nEntity name: APEX PACIFIC PTE. LTD.\nUEN: 201734892K\nDate of incorporation: 14 November 2017\nEntity type: Exempt private company limited by shares\nStatus: Live\nRegistered office: 1 Raffles Place, #20-61, One Raffles Place, Singapore 048616\nPrincipal activity: Investment holding (SSIC 64202)"
+        },
+        {
+          "page": 2,
+          "text": "SHARE CAPITAL AND SHAREHOLDERS\n\nIssued and paid-up capital: SGD 2,000,000 (2,000,000 ordinary shares of SGD 1 each)\n\nShareholders of record:\n  1. CRESCENT NOMINEES PTE LTD (UEN 200512987M) — 1,000,000 shares (50%) —      held as nominee under a declaration of trust dated 12 June 2021 in favour      of Mr LIM WEI JIAN (NRIC S******5G).\n  2. HARTWELL FAMILY HOLDINGS (BVI) LTD (foreign company, BVI registration      1882104) — 1,000,000 shares (50%).\n\nDIRECTORS\n  - Mr LIM WEI JIAN — Singapore citizen, appointed 14 November 2017.\n  - Mr OLIVER JAMES HARTWELL — British citizen, appointed 14 November 2017.\n\nNo corporate director or secretary is on the register. The nominee arrangement for Mr Lim's interest is disclosed for transparency; the underlying declaration of trust is held by Allen & Overy (Singapore) and has not been provided to the U.S. counterparty."
+        }
+      ]
+    }
+  ],
+  "answer_key": {
+    "resolved_ubos": [
+      {
+        "name": "Oliver James Hartwell",
+        "nationality": "GB",
+        "ownership_pct": 30.0,
+        "path": [
+          "meridian_us_holdings_llc",
+          "meridian_global_industries_ltd",
+          "apex_pacific_pte",
+          "hartwell_family_holdings_bvi",
+          "oliver_hartwell_bvi"
+        ],
+        "ubo_by_control": false
+      },
+      {
+        "name": "Lim Wei Jian (held through nominee)",
+        "nationality": "SG",
+        "ownership_pct": 30.0,
+        "path": [
+          "meridian_us_holdings_llc",
+          "meridian_global_industries_ltd",
+          "apex_pacific_pte",
+          "lim_wei_jian"
+        ],
+        "ubo_by_control": false
+      }
+    ],
+    "risk_level": "high",
+    "memo_type": null,
+    "expected_escalation": true,
+    "expected_complexity_signals": [
+      "multi_tier",
+      "multi_jurisdiction",
+      "nominee_arrangement",
+      "offshore_intermediary",
+      "irrevocable_trust_with_foreign_nationals"
+    ]
+  }
+}

@@ -1,5 +1,5 @@
 %PDF-1.4
-%“Œ‹ž ReportLab Generated PDF document http://www.reportlab.com
+%“Œ‹ž ReportLab Generated PDF document (opensource)
 1 0 obj
 <<
 /F1 2 0 R /F2 3 0 R /F3 4 0 R /F4 5 0 R
@@ -62,7 +62,7 @@ endobj
 endobj
 10 0 obj
 <<
-/Author (Syntex Compliance Agent \204 Test Fixture) /CreationDate (D:20260424144000-07'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20260424144000-07'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
+/Author (Syntex Compliance Agent \204 Test Fixture) /CreationDate (D:20260503132151-07'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20260503132151-07'00') /Producer (ReportLab PDF Library - \(opensource\)) 
   /Subject (\(unspecified\)) /Title (Bergmann Verwaltungs GmbH Commercial Register Extract) /Trapped /False
 >>
 endobj
@@ -95,30 +95,30 @@ endobj
 xref
 0 15
 0000000000 65535 f 
-0000000073 00000 n 
-0000000134 00000 n 
-0000000241 00000 n 
-0000000349 00000 n 
-0000000459 00000 n 
-0000000568 00000 n 
-0000000763 00000 n 
-0000000958 00000 n 
-0000001153 00000 n 
-0000001222 00000 n 
-0000001574 00000 n 
-0000001646 00000 n 
-0000002814 00000 n 
-0000003722 00000 n 
+0000000061 00000 n 
+0000000122 00000 n 
+0000000229 00000 n 
+0000000337 00000 n 
+0000000447 00000 n 
+0000000556 00000 n 
+0000000751 00000 n 
+0000000946 00000 n 
+0000001141 00000 n 
+0000001210 00000 n 
+0000001559 00000 n 
+0000001631 00000 n 
+0000002799 00000 n 
+0000003707 00000 n 
 trailer
 <<
 /ID 
-[<0b6ba010b1c812d9b0d50dea93b5e547><0b6ba010b1c812d9b0d50dea93b5e547>]
-% ReportLab generated PDF document -- digest (http://www.reportlab.com)
+[<72f45b890c40a136886e65196ccb45bb><72f45b890c40a136886e65196ccb45bb>]
+% ReportLab generated PDF document -- digest (opensource)
 
 /Info 10 0 R
 /Root 9 0 R
 /Size 15
 >>
 startxref
-4550
+4535
 %%EOF

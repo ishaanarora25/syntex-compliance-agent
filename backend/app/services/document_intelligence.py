@@ -30,7 +30,7 @@ from anthropic import APIError
 from app.config import get_settings
 from app.exceptions import ClaudeAPIError
 from app.models import ExtractedEdge, ExtractedEntityRef, UploadedDocumentMeta
-from app.services.claude_client import _get_client
+from app.services.claude_client import messages_create
 from app.services.pdf_extractor import ExtractedPDF
 
 logger = logging.getLogger(__name__)
@@ -316,7 +316,7 @@ async def extract_graph(
     )
 
     try:
-        response = await _get_client().messages.create(
+        response = await messages_create(
             model=get_settings().ANTHROPIC_MODEL,
             max_tokens=4000,
             system=_EXTRACT_SYSTEM,
@@ -445,7 +445,7 @@ async def reclassify_with_claude(pdf: ExtractedPDF, current: ClassificationHint)
     )
 
     try:
-        response = await _get_client().messages.create(
+        response = await messages_create(
             model=get_settings().ANTHROPIC_MODEL,
             max_tokens=200,
             messages=[{"role": "user", "content": user_message}],

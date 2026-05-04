@@ -2,9 +2,8 @@
 
 import { AppHeader } from "@/components/layout/app-header";
 import { useScenario } from "@/components/scenario/use-scenario";
-import { OwnershipGraph } from "@/components/graph/ownership-graph";
+import { AnalysisChatView } from "@/components/case/analysis-chat-view";
 import { MemoPanel } from "@/components/memo/memo-panel";
-import { AuditStrip } from "@/components/audit/audit-strip";
 import { CaseSidebar } from "@/components/case/case-sidebar";
 import { HomeView } from "@/components/case/home-view";
 
@@ -29,6 +28,8 @@ export default function HomePage() {
           activeCaseId={s.activeCaseId}
           activeFixtureId={s.activeFixtureId}
           isBusy={s.isLoading}
+          useAgentLoop={s.useAgentLoop}
+          onToggleAgentLoop={s.setUseAgentLoop}
           onCreateCase={s.createNewCase}
           onSelectCase={s.selectCase}
           onSelectFixture={s.selectFixture}
@@ -36,23 +37,27 @@ export default function HomePage() {
 
         {showAnalysis ? (
           <>
-            {/* Middle column: ownership graph */}
+            {/* Middle column: agent chat stream */}
             <div className="flex flex-col flex-1 min-w-0 border-r border-border overflow-hidden">
-              <OwnershipGraph
-                nodes={s.analysisResult?.graph_nodes ?? []}
-                edges={s.analysisResult?.graph_edges ?? []}
-                isLoading={s.isAnalyzing}
+              <AnalysisChatView
+                chatEvents={s.chatEvents}
+                liveStage={s.liveStage}
+                analysisResult={s.analysisResult}
+                isAnalyzing={s.isAnalyzing}
+                applicantName={s.selectedCase?.name ?? s.selectedFixture?.label}
+                documentCount={s.selectedCase?.documents?.length ?? 0}
+                onUpdateSection={s.updateSection}
               />
             </div>
 
-            {/* Right column: memo + screenings + checklist + reasoning */}
-            <div className="w-[42%] min-w-[420px] overflow-hidden">
+            {/* Right column: CDD checklist, documents, screening, reasoning */}
+            <div className="w-[30%] min-w-[300px] max-w-[380px] overflow-hidden">
               <MemoPanel
                 analysisResult={s.analysisResult}
-                memoSections={s.memoSections}
                 isLoading={s.isAnalyzing}
-                onUpdateSection={s.updateSection}
-                onApproveDraft={s.approveDraft}
+                documents={s.selectedCase?.documents ?? []}
+                onUploadFiles={s.activeCaseId ? s.uploadFiles : undefined}
+                isUploading={s.isUploading}
               />
             </div>
           </>
@@ -70,7 +75,6 @@ export default function HomePage() {
         )}
       </div>
 
-      <AuditStrip entries={s.auditLog} />
     </div>
   );
 }

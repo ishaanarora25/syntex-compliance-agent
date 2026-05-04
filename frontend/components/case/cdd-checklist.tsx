@@ -27,6 +27,12 @@ export function CDDChecklist({ checklist }: CDDChecklistProps) {
 
   return (
     <div className="flex flex-col">
+      <div className="px-4 py-3 border-b border-border bg-muted/20">
+        <p className="text-xs text-muted-foreground leading-snug">
+          Documents required for the CDD narrative — covering legal existence,
+          beneficial ownership, and identity verification.
+        </p>
+      </div>
       <div className="flex items-center gap-2 px-4 py-2 border-b border-border bg-muted/30">
         <Badge variant="success" className="text-[10px]">
           {checklist.satisfied_count} provided
@@ -40,7 +46,7 @@ export function CDDChecklist({ checklist }: CDDChecklistProps) {
         {checklist.blocking_for_ubo_resolution && (
           <Badge variant="danger" className="text-[10px] ml-auto gap-1">
             <AlertTriangle className="size-2.5" />
-            Blocks UBO finalization
+            Blocks CDD file closure
           </Badge>
         )}
       </div>

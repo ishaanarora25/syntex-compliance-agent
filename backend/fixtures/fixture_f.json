@@ -1,0 +1,119 @@
+{
+  "fixture_id": "fixture_f",
+  "label": "Scenario F — Foreign-Domiciled Parent Opening US Operations",
+  "scenario": "F",
+  "description": "Foreign-parent intake: a UK private limited company has formed a Delaware C-corp subsidiary. The agent must surface apostille, certified-translation, W-8BEN-E, Companies House filing-history, nominee-director attestation, and CTA foreign-reporting-company BOI documents.",
+  "entities": [
+    {
+      "entity_id": "albion_us_inc",
+      "label": "Albion US Inc",
+      "entity_type": "company",
+      "entity_subtype": "C-corp",
+      "jurisdiction": "Delaware, USA",
+      "is_root": true,
+      "has_control_rights": false,
+      "risk_flags": [],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "albion_holdings_ltd",
+      "label": "Albion Holdings Ltd",
+      "entity_type": "company",
+      "entity_subtype": "private_limited",
+      "jurisdiction": "England and Wales, United Kingdom",
+      "is_root": false,
+      "has_control_rights": false,
+      "risk_flags": [
+        "foreign_entity"
+      ],
+      "adverse_media": null
+    },
+    {
+      "entity_id": "oliver_hartwell",
+      "label": "Oliver James Hartwell",
+      "entity_type": "individual",
+      "entity_subtype": null,
+      "jurisdiction": "London, United Kingdom",
+      "nationality": "GB",
+      "is_root": false,
+      "has_control_rights": true,
+      "risk_flags": [
+        "foreign_national"
+      ],
+      "adverse_media": null
+    }
+  ],
+  "edges": [
+    {
+      "edge_id": "e1",
+      "source": "albion_us_inc",
+      "target": "albion_holdings_ltd",
+      "ownership_pct": 100.0,
+      "doc_id": "albion_us_certificate_of_incorporation",
+      "page": 2
+    },
+    {
+      "edge_id": "e2",
+      "source": "albion_holdings_ltd",
+      "target": "oliver_hartwell",
+      "ownership_pct": 100.0,
+      "doc_id": "albion_uk_companies_house_extract",
+      "page": 2
+    }
+  ],
+  "documents": [
+    {
+      "doc_id": "albion_us_certificate_of_incorporation",
+      "label": "Albion US Inc Certificate of Incorporation",
+      "doc_type": "certificate_of_incorporation",
+      "pages": [
+        {
+          "page": 1,
+          "text": "CERTIFICATE OF INCORPORATION\nALBION US INC\nState of Delaware\n\nFIRST: The name of the corporation is Albion US Inc.\nSECOND: The address of the registered office in Delaware is 251 Little Falls Drive, Wilmington, New Castle County, Delaware 19808.\nTHIRD: The purpose of the corporation is to engage in any lawful act or activity for which corporations may be organized under the General Corporation Law of Delaware.\n\nDate of Incorporation: February 17, 2026\nAuthorized capital: 10,000,000 shares of common stock, $0.0001 par value."
+        },
+        {
+          "page": 2,
+          "text": "INCORPORATOR AND INITIAL STOCKHOLDER\n\nThe sole incorporator and initial holder of all issued and outstanding shares of Albion US Inc is Albion Holdings Ltd, a private limited company incorporated in England and Wales (Companies House registration number 14782301), with its registered office at 8 Devonshire Square, London EC2M 4PL, United Kingdom.\n\nAlbion Holdings Ltd holds one hundred percent (100%) of the issued and outstanding shares of Albion US Inc as of the date of this filing.\n\nNo nominee or proxy arrangement is in place at the U.S. subsidiary level. U.S. operations: software-as-a-service distribution and technical support for Albion Holdings Ltd's enterprise scheduling platform."
+        }
+      ]
+    },
+    {
+      "doc_id": "albion_uk_companies_house_extract",
+      "label": "Albion Holdings Ltd Companies House Confirmation Statement (Excerpt)",
+      "doc_type": "commercial_register_extract",
+      "pages": [
+        {
+          "page": 1,
+          "text": "COMPANIES HOUSE — CONFIRMATION STATEMENT\nCompany: ALBION HOLDINGS LTD\nCompany number: 14782301\nDate of incorporation: 11 March 2019\nRegistered office: 8 Devonshire Square, London EC2M 4PL\nType: Private limited company\nStatus: Active\nSIC code: 62012 — Business and domestic software development\n\nThis confirmation statement is filed under section 853A of the Companies Act 2006 and confirms that the information held on the public register is accurate as of the confirmation date below."
+        },
+        {
+          "page": 2,
+          "text": "PERSONS WITH SIGNIFICANT CONTROL (PSC)\n\nName: Mr Oliver James Hartwell\nNationality: British\nCountry of residence: United Kingdom\nService address: 8 Devonshire Square, London EC2M 4PL\nDate of birth: April 1981 (month and year only)\n\nNature of control:\n  - Ownership of shares — 75% or more\n  - Ownership of voting rights — 75% or more\n  - Right to appoint and remove directors\n\nPer the share register dated 31 January 2026, Mr Hartwell holds 100 ordinary shares of £1 each, representing one hundred percent (100%) of the issued share capital of Albion Holdings Ltd. No other person is registered as having significant control."
+        },
+        {
+          "page": 3,
+          "text": "DIRECTORS AND SECRETARIES\n\nDirector: Mr Oliver James Hartwell — appointed 11 March 2019, occupation: Company Director, nationality: British.\nDirector: Ms Charlotte Anne Hartwell — appointed 11 March 2019, occupation: Company Director, nationality: British.\nCompany Secretary: None appointed.\n\nNo nominee or corporate director is on the register.\n\nThis document is an extract from the Companies House public record and is intended for due-diligence reference only. For use as a primary identification document by a U.S. financial institution, an apostille issued under the 1961 Hague Convention should be obtained."
+        }
+      ]
+    }
+  ],
+  "answer_key": {
+    "resolved_ubos": [
+      {
+        "name": "Oliver James Hartwell",
+        "nationality": "GB",
+        "ownership_pct": 100.0,
+        "path": [
+          "albion_us_inc",
+          "albion_holdings_ltd",
+          "oliver_hartwell"
+        ],
+        "ubo_by_control": false
+      }
+    ],
+    "risk_level": "medium",
+    "memo_type": null,
+    "expected_escalation": false,
+    "expected_complexity_signals": []
+  }
+}

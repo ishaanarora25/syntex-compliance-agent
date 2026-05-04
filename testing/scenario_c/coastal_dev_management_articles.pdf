@@ -1,5 +1,5 @@
 %PDF-1.4
-%“Œ‹ž ReportLab Generated PDF document http://www.reportlab.com
+%“Œ‹ž ReportLab Generated PDF document (opensource)
 1 0 obj
 <<
 /F1 2 0 R /F2 3 0 R /F3 4 0 R /F4 5 0 R
@@ -42,7 +42,7 @@ endobj
 endobj
 8 0 obj
 <<
-/Author (Syntex Compliance Agent \204 Test Fixture) /CreationDate (D:20260424144000-07'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20260424144000-07'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
+/Author (Syntex Compliance Agent \204 Test Fixture) /CreationDate (D:20260503132151-07'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20260503132151-07'00') /Producer (ReportLab PDF Library - \(opensource\)) 
   /Subject (\(unspecified\)) /Title (Coastal Dev Management LLC Articles of Organization) /Trapped /False
 >>
 endobj
@@ -61,26 +61,26 @@ endobj
 xref
 0 11
 0000000000 65535 f 
-0000000073 00000 n 
-0000000134 00000 n 
-0000000241 00000 n 
-0000000349 00000 n 
-0000000459 00000 n 
-0000000568 00000 n 
-0000000762 00000 n 
-0000000830 00000 n 
-0000001179 00000 n 
-0000001238 00000 n 
+0000000061 00000 n 
+0000000122 00000 n 
+0000000229 00000 n 
+0000000337 00000 n 
+0000000447 00000 n 
+0000000556 00000 n 
+0000000750 00000 n 
+0000000818 00000 n 
+0000001164 00000 n 
+0000001223 00000 n 
 trailer
 <<
 /ID 
-[<49e60ff4a8af2d8fc441cb96770cd278><49e60ff4a8af2d8fc441cb96770cd278>]
-% ReportLab generated PDF document -- digest (http://www.reportlab.com)
+[<8ef87fa3753e2c5bd87bced6fbf8a6c4><8ef87fa3753e2c5bd87bced6fbf8a6c4>]
+% ReportLab generated PDF document -- digest (opensource)
 
 /Info 8 0 R
 /Root 7 0 R
 /Size 11
 >>
 startxref
-2306
+2291
 %%EOF

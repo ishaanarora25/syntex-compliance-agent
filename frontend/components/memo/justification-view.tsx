@@ -4,11 +4,14 @@ import { User, CheckCircle, AlertCircle, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { MemoSection } from "./memo-section";
-import type { AnalyzeResponse, MemoSection as MemoSectionType } from "@/types/edd";
+import type {
+  AnalyzeResponse,
+  JustificationSection as JustificationSectionType,
+} from "@/types/edd";
 
-interface UboMemoProps {
+interface JustificationViewProps {
   result: AnalyzeResponse;
-  memoSections: MemoSectionType[];
+  sections: JustificationSectionType[];
   onUpdateSection: (sectionId: string, content: string) => void;
 }
 
@@ -24,10 +27,14 @@ const OFAC_COLOR = {
   confirmed_hit: "text-red-500",
 };
 
-export function UboMemo({ result, memoSections, onUpdateSection }: UboMemoProps) {
+export function JustificationView({
+  result,
+  sections,
+  onUpdateSection,
+}: JustificationViewProps) {
   return (
     <div className="space-y-5">
-      {/* UBO Table */}
+      {/* UBO summary header */}
       <div>
         <h3 className="text-sm font-semibold text-foreground mb-2">
           Resolved Beneficial Owners ({result.resolved_ubos.length})
@@ -35,8 +42,8 @@ export function UboMemo({ result, memoSections, onUpdateSection }: UboMemoProps)
         <div className="space-y-2">
           {result.resolved_ubos.map((ubo) => {
             const OFACIcon = OFAC_ICON[ubo.ofac_result.status] ?? CheckCircle;
-            const ofacColor = OFAC_COLOR[ubo.ofac_result.status] ?? "text-muted-foreground";
-
+            const ofacColor =
+              OFAC_COLOR[ubo.ofac_result.status] ?? "text-muted-foreground";
             return (
               <div
                 key={ubo.entity_id}
@@ -45,13 +52,21 @@ export function UboMemo({ result, memoSections, onUpdateSection }: UboMemoProps)
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-1.5">
                     <User className="size-3.5 text-muted-foreground shrink-0" />
-                    <span className="font-semibold text-foreground">{ubo.name}</span>
-                    <Badge variant="outline" className="text-[10px] h-4">{ubo.nationality}</Badge>
+                    <span className="font-semibold text-foreground">
+                      {ubo.name}
+                    </span>
+                    <Badge variant="outline" className="text-[10px] h-4">
+                      {ubo.nationality}
+                    </Badge>
                   </div>
                   <span className="font-mono text-foreground">
-                    {ubo.ubo_by_control
-                      ? <span className="text-orange-600 font-semibold">Control</span>
-                      : `${ubo.ownership_pct.toFixed(1)}%`}
+                    {ubo.ubo_by_control ? (
+                      <span className="text-orange-600 font-semibold">
+                        Control
+                      </span>
+                    ) : (
+                      `${ubo.ownership_pct.toFixed(1)}%`
+                    )}
                   </span>
                 </div>
 
@@ -62,16 +77,16 @@ export function UboMemo({ result, memoSections, onUpdateSection }: UboMemoProps)
                       OFAC: {ubo.ofac_result.status.replace("_", " ")}
                     </span>
                   </div>
-                  {ubo.risk_flags.filter(f => f !== "foreign_national").map((f) => (
-                    <Badge key={f} variant="danger" className="text-[10px] h-4 px-1">{f}</Badge>
+                  {ubo.risk_flags.map((f) => (
+                    <Badge
+                      key={f}
+                      variant="danger"
+                      className="text-[10px] h-4 px-1"
+                    >
+                      {f.replace(/_/g, " ")}
+                    </Badge>
                   ))}
                 </div>
-
-                {ubo.ofac_result.status !== "clear" && ubo.ofac_result.remarks && (
-                  <p className="text-[10px] text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded px-2 py-1 leading-relaxed">
-                    {ubo.ofac_result.remarks}
-                  </p>
-                )}
               </div>
             );
           })}
@@ -80,8 +95,8 @@ export function UboMemo({ result, memoSections, onUpdateSection }: UboMemoProps)
 
       <Separator />
 
-      {/* Memo sections */}
-      {memoSections.map((section) => (
+      {/* Justification sections */}
+      {sections.map((section) => (
         <div key={section.section_id}>
           <MemoSection
             section={section}

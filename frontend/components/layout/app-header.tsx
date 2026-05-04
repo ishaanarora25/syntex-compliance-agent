@@ -10,11 +10,6 @@ export function AppHeader() {
           AI analyst for BSA/AML onboarding, UBO resolution & EDD
         </span>
       </div>
-      <div className="ml-auto">
-        <span className="text-xs text-muted-foreground bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full font-medium">
-          DEMO — All outputs require analyst review
-        </span>
-      </div>
     </header>
   );
 }

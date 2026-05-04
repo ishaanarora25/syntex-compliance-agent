@@ -44,6 +44,9 @@ SCENARIO_DIR_NAMES: Dict[str, str] = {
     "B": "scenario_b",
     "stress_c": "scenario_c",
     "stress_d": "scenario_d",
+    "E": "scenario_e",
+    "F": "scenario_f",
+    "G": "scenario_g",
 }
 
 

@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { DocumentUpload } from "./document-upload";
 import { DocumentList } from "./document-list";
+import { LiveAgentPanel } from "./live-agent-panel";
+import type { LiveAgentEvent, LiveAgentStage } from "@/components/scenario/use-scenario";
 import type { CaseDetail, FixtureMeta } from "@/types/edd";
 
 interface CaseWorkspaceProps {
@@ -16,6 +18,9 @@ interface CaseWorkspaceProps {
   riskLevel: string | null;
   onUpload: (files: File[]) => Promise<void>;
   onAnalyze: () => void;
+  liveTrace?: LiveAgentEvent[];
+  liveStage?: LiveAgentStage;
+  useAgentLoop?: boolean;
 }
 
 const RISK_VARIANT: Record<string, "success" | "warning" | "danger" | "secondary"> = {
@@ -33,7 +38,11 @@ export function CaseWorkspace({
   riskLevel,
   onUpload,
   onAnalyze,
+  liveTrace = [],
+  liveStage = "idle",
+  useAgentLoop = false,
 }: CaseWorkspaceProps) {
+  const showLivePanel = useAgentLoop && (isAnalyzing || liveTrace.length > 0);
   if (!selectedCase && !selectedFixture) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-2 text-center p-8">
@@ -135,6 +144,8 @@ export function CaseWorkspace({
           </ScrollArea>
         </>
       )}
+
+      {showLivePanel && <LiveAgentPanel trace={liveTrace} stage={liveStage} />}
     </div>
   );
 }

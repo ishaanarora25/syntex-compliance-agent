@@ -19,6 +19,15 @@ class Settings(BaseSettings):
 
     ANTHROPIC_API_KEY: str
     ANTHROPIC_MODEL: str = "claude-sonnet-4-5"
+    ANTHROPIC_AGENT_MODEL: str = "claude-opus-4-7"
+    AGENT_MAX_ITERATIONS: int = 30
+    AGENT_TOOL_TIMEOUT_S: int = 60
+
+    # Optional override for the Claude Code CLI binary the SDK shells out to.
+    # The SDK ships an x86_64 build that crashes on AVX-less / Rosetta-served
+    # macOS — set this to a native install (e.g. /Users/me/.local/bin/claude)
+    # to bypass the bundled binary.
+    CLAUDE_CLI_PATH: str | None = None
 
     # CORS
     ALLOWED_ORIGINS: str = "http://localhost:3001"
