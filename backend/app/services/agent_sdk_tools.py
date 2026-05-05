@@ -80,6 +80,24 @@ def get_run_context() -> AgentRunContext:
 ImplFn = Callable[[Dict[str, Any], AgentRunContext], Awaitable[Dict[str, Any]]]
 
 
+# Required predecessors for downstream tools. Enforced deterministically so
+# the agent cannot skip resolution/drafting before finalizing.
+_PREREQUISITES: Dict[str, List[str]] = {
+    "draft_justification": ["resolve_ownership"],
+    "finalize": ["resolve_ownership", "draft_justification"],
+}
+
+
+def _missing_prereqs(name: str, execution_log: List[Dict[str, Any]]) -> List[str]:
+    required = _PREREQUISITES.get(name, [])
+    if not required:
+        return []
+    succeeded = {
+        entry["name"] for entry in execution_log if not entry.get("is_error")
+    }
+    return [r for r in required if r not in succeeded]
+
+
 async def _invoke(name: str, args: Dict[str, Any], impl: ImplFn) -> Dict[str, Any]:
     """
     Run an underlying tool impl, log it on the run context, and return the
@@ -98,15 +116,62 @@ async def _invoke(name: str, args: Dict[str, Any], impl: ImplFn) -> Dict[str, An
             "is_error": True,
         }
 
+    arg_keys = sorted(args.keys())
+    logger.info(
+        "tool_call.start case=%s iter=%s name=%s arg_keys=%s",
+        ctx.case_id, ctx.iteration, name, arg_keys,
+    )
+
+    missing = _missing_prereqs(name, ctx.execution_log)
+    if missing:
+        error_msg = (
+            f"{name} blocked: must call {' and '.join(missing)} successfully "
+            f"first. Run the missing step(s), then retry."
+        )
+        logger.warning(
+            "tool_call.blocked case=%s iter=%s name=%s missing=%s",
+            ctx.case_id, ctx.iteration, name, missing,
+        )
+        payload = {"error": error_msg}
+        ctx.execution_log.append(
+            {
+                "iteration": ctx.iteration,
+                "name": name,
+                "input": dict(args),
+                "payload": payload,
+                "duration_ms": 0,
+                "is_error": True,
+            }
+        )
+        return {
+            "content": [{"type": "text", "text": json.dumps(payload)}],
+            "is_error": True,
+        }
+
     t0 = time.time()
     try:
         payload = await impl(args, ctx)
     except Exception as exc:  # pragma: no cover — defensive
-        logger.exception("SDK tool '%s' raised", name)
+        logger.exception(
+            "tool_call.raised case=%s iter=%s name=%s",
+            ctx.case_id, ctx.iteration, name,
+        )
         payload = {"error": f"{type(exc).__name__}: {exc}"}
 
     duration_ms = int((time.time() - t0) * 1000)
     is_error = isinstance(payload, dict) and "error" in payload
+
+    if is_error:
+        logger.warning(
+            "tool_call.error case=%s iter=%s name=%s duration_ms=%s error=%s",
+            ctx.case_id, ctx.iteration, name, duration_ms, payload.get("error"),
+        )
+    else:
+        logger.info(
+            "tool_call.ok case=%s iter=%s name=%s duration_ms=%s payload_keys=%s",
+            ctx.case_id, ctx.iteration, name, duration_ms,
+            sorted(payload.keys()) if isinstance(payload, dict) else type(payload).__name__,
+        )
 
     if name == "finalize" and not is_error:
         ctx.final_response = None  # placeholder; real assembly happens in orchestrator

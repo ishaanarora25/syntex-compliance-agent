@@ -201,6 +201,11 @@ async def run_stream(case_id: str) -> AsyncIterator[Dict[str, Any]]:
                 if turn_tool_uses:
                     iteration += 1
                     ctx.iteration = iteration
+                    logger.info(
+                        "agent.iteration case=%s iter=%s tool_count=%s names=%s",
+                        case_id, iteration, len(turn_tool_uses),
+                        [_strip_mcp_prefix(b.name) for b in turn_tool_uses],
+                    )
                     yield {"type": "iteration", "iteration": iteration}
                     for block in turn_tool_uses:
                         display_name = _strip_mcp_prefix(block.name)
@@ -211,6 +216,11 @@ async def run_stream(case_id: str) -> AsyncIterator[Dict[str, Any]]:
                             "iteration": iteration,
                         }
                         tool_uses.append(record)
+                        logger.info(
+                            "agent.tool_use case=%s iter=%s name=%s tool_use_id=%s arg_keys=%s",
+                            case_id, iteration, display_name, block.id,
+                            sorted((block.input or {}).keys()),
+                        )
                         yield {
                             "type": "tool_use",
                             "iteration": iteration,
@@ -225,6 +235,11 @@ async def run_stream(case_id: str) -> AsyncIterator[Dict[str, Any]]:
                 # ToolResultBlocks in the same order.
                 while emitted_results < len(ctx.execution_log):
                     entry = ctx.execution_log[emitted_results]
+                    logger.info(
+                        "agent.tool_result case=%s iter=%s name=%s is_error=%s duration_ms=%s",
+                        case_id, entry["iteration"], _strip_mcp_prefix(entry["name"]),
+                        entry["is_error"], entry["duration_ms"],
+                    )
                     yield {
                         "type": "tool_result",
                         "iteration": entry["iteration"],
@@ -257,6 +272,11 @@ async def run_stream(case_id: str) -> AsyncIterator[Dict[str, Any]]:
     # (e.g. final assistant message had no follow-up).
     while emitted_results < len(ctx.execution_log):
         entry = ctx.execution_log[emitted_results]
+        logger.info(
+            "agent.tool_result_drain case=%s iter=%s name=%s is_error=%s duration_ms=%s",
+            case_id, entry["iteration"], _strip_mcp_prefix(entry["name"]),
+            entry["is_error"], entry["duration_ms"],
+        )
         yield {
             "type": "tool_result",
             "iteration": entry["iteration"],
@@ -266,6 +286,12 @@ async def run_stream(case_id: str) -> AsyncIterator[Dict[str, Any]]:
             "duration_ms": entry["duration_ms"],
         }
         emitted_results += 1
+
+    error_count = sum(1 for e in ctx.execution_log if e["is_error"])
+    logger.info(
+        "agent.loop_end case=%s iterations=%s tool_calls=%s errors=%s stop_reason=%s",
+        case_id, iteration, len(ctx.execution_log), error_count, stop_reason,
+    )
 
     final_args = _last_finalize(ctx.execution_log)
     if final_args is not None:
