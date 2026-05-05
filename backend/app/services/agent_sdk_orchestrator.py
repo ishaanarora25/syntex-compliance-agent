@@ -422,11 +422,17 @@ async def run_stream(case_id: str) -> AsyncIterator[Dict[str, Any]]:
     case_store.store_analysis(case_id, response)
 
     if result_msg is not None:
+        usage = getattr(result_msg, "usage", None) or {}
         logger.info(
-            "SDK run finished: case=%s turns=%s cost_usd=%s",
+            "SDK run finished: case=%s turns=%s cost_usd=%s "
+            "cache_read=%s cache_write=%s input=%s output=%s",
             case_id,
             getattr(result_msg, "num_turns", "?"),
             getattr(result_msg, "total_cost_usd", "?"),
+            usage.get("cache_read_input_tokens", "?"),
+            usage.get("cache_creation_input_tokens", "?"),
+            usage.get("input_tokens", "?"),
+            usage.get("output_tokens", "?"),
         )
 
     yield {"type": "final", "response": response}

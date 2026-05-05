@@ -22,6 +22,11 @@ if TYPE_CHECKING:
     from app.services.case_store import _Case
 
 
+# NOTE: AGENT_SYSTEM_PROMPT is interpolated once at import time and MUST stay
+# static across runs. The Claude Agent SDK / CLI auto-applies a prompt-cache
+# breakpoint to the system prompt; any per-run interpolation (timestamps,
+# case ids, applicant names) here will bust the cache prefix and add 5–10s
+# of TTFT per turn. Per-case data belongs in `render_case_brief()` instead.
 AGENT_SYSTEM_PROMPT = f"""\
 You are Syntex Compliance Agent, embedded with a relationship manager (RM)
 during applicant intake at a U.S. financial institution. Your job is to make

@@ -2,6 +2,7 @@
 
 import { CheckCircle2, Loader2, AlertCircle, Sparkles } from "lucide-react";
 import type { LiveAgentEvent, LiveAgentStage } from "@/components/scenario/use-scenario";
+import { activityLabel } from "@/lib/agent-activity";
 
 interface LiveAgentPanelProps {
   trace: LiveAgentEvent[];
@@ -41,10 +42,9 @@ export function LiveAgentPanel({ trace, stage }: LiveAgentPanelProps) {
             <StatusIcon status={e.status} />
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5">
-                <span className="font-mono text-[10px] text-muted-foreground">
-                  i{e.iteration}
+                <span className="font-medium truncate">
+                  {activityLabel(e.name, e.input)}
                 </span>
-                <span className="font-medium truncate">{e.name}</span>
                 {e.duration_ms != null && e.status !== "running" && (
                   <span className="text-[10px] text-muted-foreground">
                     {e.duration_ms}ms

@@ -190,6 +190,7 @@ Rules:
 _EXTRACT_TOOL = {
     "name": "emit_ownership_graph",
     "description": "Emit the structured ownership graph for the applicant.",
+    "cache_control": {"type": "ephemeral"},
     "input_schema": {
         "type": "object",
         "properties": {
@@ -319,7 +320,13 @@ async def extract_graph(
         response = await messages_create(
             model=get_settings().ANTHROPIC_MODEL,
             max_tokens=4000,
-            system=_EXTRACT_SYSTEM,
+            system=[
+                {
+                    "type": "text",
+                    "text": _EXTRACT_SYSTEM,
+                    "cache_control": {"type": "ephemeral"},
+                }
+            ],
             tools=[_EXTRACT_TOOL],
             tool_choice={"type": "tool", "name": "emit_ownership_graph"},
             messages=[{"role": "user", "content": user_message}],

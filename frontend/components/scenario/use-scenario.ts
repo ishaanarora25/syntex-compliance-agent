@@ -51,6 +51,11 @@ export type LiveAgentStage =
   | "done"
   | "error";
 
+export type LiveStartInfo = {
+  applicant: string;
+  documentCount: number;
+};
+
 export function useScenario() {
   const [cases, setCases] = useState<CaseSummary[]>([]);
   const [fixtures, setFixtures] = useState<FixtureMeta[]>([]);
@@ -70,6 +75,7 @@ export function useScenario() {
   // entry in place via tool_use_id. Cleared at the start of every run.
   const [liveTrace, setLiveTrace] = useState<LiveAgentEvent[]>([]);
   const [liveStage, setLiveStage] = useState<LiveAgentStage>("idle");
+  const [liveStart, setLiveStart] = useState<LiveStartInfo | null>(null);
   // Unified chat timeline: interleaved text narration + tool call entries.
   const [chatEvents, setChatEvents] = useState<ChatEvent[]>([]);
   // Map tool_use_id → array index, kept in a ref so onEvent can mutate the
@@ -91,12 +97,17 @@ export function useScenario() {
     setLiveTrace([]);
     setChatEvents([]);
     setLiveStage("idle");
+    setLiveStart(null);
   }, []);
 
   const handleAgentEvent = useCallback((event: AgentStreamEvent) => {
     switch (event.type) {
       case "started":
         setLiveStage("running");
+        setLiveStart({
+          applicant: event.applicant,
+          documentCount: event.document_count,
+        });
         break;
       case "tool_use": {
         const entry: LiveAgentEvent = {
@@ -423,6 +434,7 @@ export function useScenario() {
     setUseAgentLoop,
     liveTrace,
     liveStage,
+    liveStart,
     chatEvents,
     createNewCase,
     selectCase,

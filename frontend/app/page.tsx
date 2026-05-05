@@ -44,8 +44,16 @@ export default function HomePage() {
                 liveStage={s.liveStage}
                 analysisResult={s.analysisResult}
                 isAnalyzing={s.isAnalyzing}
-                applicantName={s.selectedCase?.name ?? s.selectedFixture?.label}
-                documentCount={s.selectedCase?.documents?.length ?? 0}
+                applicantName={
+                  s.liveStart?.applicant ??
+                  s.selectedCase?.name ??
+                  s.selectedFixture?.label
+                }
+                documentCount={
+                  s.liveStart?.documentCount ??
+                  s.selectedCase?.documents?.length ??
+                  0
+                }
                 onUpdateSection={s.updateSection}
               />
             </div>

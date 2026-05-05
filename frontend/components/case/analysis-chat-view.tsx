@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { MemoSection } from "@/components/memo/memo-section";
 import { cn } from "@/lib/utils";
+import { activityLabel } from "@/lib/agent-activity";
 import type {
   AnalyzeResponse,
   GraphNode,
@@ -184,13 +185,15 @@ function NarrativeBlock({ text }: { text: string }) {
 
 function ToolIndicator({ event }: { event: LiveAgentEvent }) {
   return (
-    <div className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground pl-1 py-0.5">
+    <div className="flex items-center gap-1.5 text-xs text-muted-foreground pl-1 py-0.5">
       <StatusIcon status={event.status} />
-      <span className="text-muted-foreground/50">i{event.iteration}</span>
-      <span className="text-muted-foreground/60">→</span>
-      <span className="text-foreground/60">{event.name}</span>
+      <span className="text-foreground/70">
+        {activityLabel(event.name, event.input)}
+      </span>
       {event.duration_ms != null && event.status !== "running" && (
-        <span className="text-muted-foreground/40">{event.duration_ms}ms</span>
+        <span className="text-muted-foreground/40 font-mono text-[10px]">
+          {event.duration_ms}ms
+        </span>
       )}
     </div>
   );
