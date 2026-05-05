@@ -42,6 +42,7 @@ logger = logging.getLogger(__name__)
 _VERIFIER_TOOL = {
     "name": "verifier_report",
     "description": "Emit the structured verifier audit of the EDD memo.",
+    "cache_control": {"type": "ephemeral"},
     "input_schema": {
         "type": "object",
         "properties": {
@@ -154,7 +155,7 @@ async def review(
         api_response = await claude_client.messages_create(
             model=settings.ANTHROPIC_AGENT_MODEL,
             max_tokens=2000,
-            system=VERIFIER_SYSTEM_PROMPT,
+            system=[{"type": "text", "text": VERIFIER_SYSTEM_PROMPT, "cache_control": {"type": "ephemeral"}}],
             tools=[_VERIFIER_TOOL],
             tool_choice={"type": "tool", "name": "verifier_report"},
             messages=[{"role": "user", "content": user_message}],

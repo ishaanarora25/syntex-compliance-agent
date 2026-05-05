@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     ANTHROPIC_API_KEY: str
     ANTHROPIC_MODEL: str = "claude-sonnet-4-5"
     ANTHROPIC_AGENT_MODEL: str = "claude-opus-4-7"
-    AGENT_MAX_ITERATIONS: int = 30
+    AGENT_MAX_ITERATIONS: int = 15
     AGENT_TOOL_TIMEOUT_S: int = 60
 
     # Optional override for the Claude Code CLI binary the SDK shells out to.

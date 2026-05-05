@@ -204,6 +204,7 @@ _JUSTIFICATION_TOOL = {
         "document justification, optional escalation reasoning, and the "
         "complete CDD document checklist)."
     ),
+    "cache_control": {"type": "ephemeral"},
     "input_schema": {
         "type": "object",
         "properties": {
@@ -427,7 +428,7 @@ async def draft_justification(
         response = await messages_create(
             model=get_settings().ANTHROPIC_MODEL,
             max_tokens=8192,
-            system=JUSTIFICATION_SYSTEM,
+            system=[{"type": "text", "text": JUSTIFICATION_SYSTEM, "cache_control": {"type": "ephemeral"}}],
             tools=[_JUSTIFICATION_TOOL],
             tool_choice={"type": "tool", "name": "emit_justification"},
             messages=[{"role": "user", "content": user_message}],

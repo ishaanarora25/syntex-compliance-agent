@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
-      signal: AbortSignal.timeout(300_000), // 5-minute hard cap
+      signal: AbortSignal.timeout(600_000), // 10-minute hard cap
     });
   } catch {
     return new Response(

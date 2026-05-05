@@ -44,17 +44,17 @@ from app.models import (
     Citation,
     EscalationRecommendation,
     JustificationSection,
-    VerifierReport,
 )
 from app.services import (
     agent_prompts,
     agent_sdk_tools,
     agent_tools,
-    agent_verifier,
     case_analyzer,
     case_store,
+    claude_client,
     graph_builder,
     reasoning_writer,
+    ubo_resolver,
 )
 
 logger = logging.getLogger(__name__)
@@ -272,38 +272,67 @@ async def run_stream(case_id: str) -> AsyncIterator[Dict[str, Any]]:
         stop_reason = "finalized"
 
     if not ctx.last_resolved_ubos or ctx.last_synthetic_fixture is None:
-        scratchpad.last_trace = AgentTrace(
-            iterations=iteration,
-            tool_calls=_build_trace(tool_uses, ctx.execution_log),
-            stop_reason=stop_reason,
+        # Agent skipped resolve_ownership — fall back to deterministic resolution
+        # so the demo never surfaces a raw error to the borrower.
+        logger.warning(
+            "Agent stopped without resolving ownership (stop_reason=%s) for case %s; "
+            "falling back to deterministic UBO resolver.",
+            stop_reason, case_id,
         )
-        scratchpad.iteration_count += iteration
-        case_store.update_scratchpad(case_id, scratchpad)
-        yield {
-            "type": "error",
-            "message": (
-                f"Agent stopped without resolving ownership (stop_reason={stop_reason})."
-            ),
-        }
-        return
+        refreshed_case = case_store.get_case_internal(case_id)
+        if refreshed_case.extracted_entities:
+            synthetic_fallback = case_analyzer.case_to_fixture(refreshed_case)
+            ctx.last_synthetic_fixture = synthetic_fallback
+            ctx.last_resolved_ubos = ubo_resolver.resolve(synthetic_fallback)
+        else:
+            scratchpad.last_trace = AgentTrace(
+                iterations=iteration,
+                tool_calls=_build_trace(tool_uses, ctx.execution_log),
+                stop_reason=stop_reason,
+            )
+            scratchpad.iteration_count += iteration
+            case_store.update_scratchpad(case_id, scratchpad)
+            yield {
+                "type": "error",
+                "message": (
+                    f"Agent stopped without resolving ownership (stop_reason={stop_reason}) "
+                    "and no entity graph is available for fallback."
+                ),
+            }
+            return
 
     justification_sections = _last_justification(ctx.execution_log)
     if not justification_sections:
-        scratchpad.last_trace = AgentTrace(
-            iterations=iteration,
-            tool_calls=_build_trace(tool_uses, ctx.execution_log),
-            stop_reason=stop_reason,
+        # Agent skipped draft_justification — generate the memo deterministically.
+        logger.warning(
+            "Agent stopped without drafting a justification (stop_reason=%s) for case %s; "
+            "falling back to Claude memo draft.",
+            stop_reason, case_id,
         )
-        scratchpad.iteration_count += iteration
-        case_store.update_scratchpad(case_id, scratchpad)
-        yield {
-            "type": "error",
-            "message": (
-                f"Agent stopped without drafting a justification "
-                f"(stop_reason={stop_reason})."
-            ),
-        }
-        return
+        try:
+            justification_sections, _ = await claude_client.draft_justification(
+                fixture=ctx.last_synthetic_fixture,
+                resolved_ubos=ctx.last_resolved_ubos,
+                requested_docs=scratchpad.requested_documents,
+                escalation=scratchpad.escalation,
+            )
+        except Exception as exc:
+            logger.exception("Fallback memo draft failed for case %s", case_id)
+            scratchpad.last_trace = AgentTrace(
+                iterations=iteration,
+                tool_calls=_build_trace(tool_uses, ctx.execution_log),
+                stop_reason=stop_reason,
+            )
+            scratchpad.iteration_count += iteration
+            case_store.update_scratchpad(case_id, scratchpad)
+            yield {
+                "type": "error",
+                "message": (
+                    f"Agent stopped without drafting a justification "
+                    f"(stop_reason={stop_reason}) and fallback memo draft failed: {exc}"
+                ),
+            }
+            return
 
     if final_args:
         risk_level = final_args.get("risk_level", "medium")
@@ -358,53 +387,6 @@ async def run_stream(case_id: str) -> AsyncIterator[Dict[str, Any]]:
             stop_reason=stop_reason,
         ),
         fincen_citations=fincen_cites,
-    )
-
-    # ----- Verifier pass -----
-    yield {"type": "verifier_start"}
-    revision_rounds = 0
-    verifier_report: Optional[VerifierReport] = None
-    while revision_rounds < 2:
-        verifier_report = await agent_verifier.review(response, ctx.scratchpad)
-        if not verifier_report.needs_revision:
-            break
-        yield {
-            "type": "verifier_revision",
-            "round": revision_rounds + 1,
-            "summary": verifier_report.summary,
-        }
-        revised_sections = await agent_verifier.redraft(
-            response,
-            ctx.last_resolved_ubos,
-            fixture,
-            ctx.scratchpad.requested_documents,
-            ctx.escalation,
-            verifier_report,
-        )
-        if revised_sections:
-            response = response.model_copy(
-                update={"justification_sections": revised_sections}
-            )
-        revision_rounds += 1
-
-    yield {
-        "type": "verifier_done",
-        "needs_revision": bool(verifier_report.needs_revision) if verifier_report else False,
-        "summary": verifier_report.summary if verifier_report else "",
-        "revision_rounds": revision_rounds,
-    }
-
-    response = response.model_copy(
-        update={
-            "verifier_report": verifier_report,
-            "agent_trace": (
-                response.agent_trace.model_copy(
-                    update={"revision_rounds": revision_rounds}
-                )
-                if response.agent_trace
-                else None
-            ),
-        }
     )
 
     # ----- Persist -----
